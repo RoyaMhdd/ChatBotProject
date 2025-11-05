@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>ثبت اختراع هوشمند</title>
+    <style>
+        body { font-family: Tahoma, sans-serif; text-align: center; margin-top: 100px; background: #f9f9f9; }
+        h1 { color: #00bfff; font-size: 50px; }
+        p { font-size: 25px; color: #333; margin: 40px; }
+        input {
+            padding: 15px; font-size: 20px; width: 300px; border-radius: 10px;
+            border: 2px solid #00bfff; outline: none;
+        }
+        button {
+            background: #00bfff; color: white; padding: 15px 50px;
+            font-size: 22px; border: none; border-radius: 12px;
+            cursor: pointer; margin-top: 20px;
+        }
+        button:hover { background: #009fd9; }
+    </style>
+</head>
+<body>
+    <h1>ثبت اختراع هوشمند</h1>
+    <p>شماره موبایلت رو بزن، کد می‌گیری!</p>
+
+    <form action="/sendotp/" method="POST">
+        {% csrf_token %}
+        <input type="text" name="phonenumber" placeholder="09121234567" required>
+        <br>
+        <button type="submit">ارسال کد</button>
+    </form>
+</body>
+</html>
