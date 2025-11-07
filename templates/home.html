@@ -1,33 +1,165 @@
 <!DOCTYPE html>
 <html lang="fa">
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>ثبت اختراع هوشمند</title>
-    <style>
-        body { font-family: Tahoma, sans-serif; text-align: center; margin-top: 100px; background: #f9f9f9; }
-        h1 { color: #00bfff; font-size: 50px; }
-        p { font-size: 25px; color: #333; margin: 40px; }
-        input {
-            padding: 15px; font-size: 20px; width: 300px; border-radius: 10px;
-            border: 2px solid #00bfff; outline: none;
-        }
-        button {
-            background: #00bfff; color: white; padding: 15px 50px;
-            font-size: 22px; border: none; border-radius: 12px;
-            cursor: pointer; margin-top: 20px;
-        }
-        button:hover { background: #009fd9; }
-    </style>
-</head>
-<body>
-    <h1>ثبت اختراع هوشمند</h1>
-    <p>شماره موبایلت رو بزن، کد می‌گیری!</p>
 
-    <form action="/sendotp/" method="POST">
+    {% load static %}
+    <style>
+      @font-face {
+        font-family: "Vazirmatn";
+        src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}")
+          format("truetype");
+        font-weight: normal;
+        font-style: normal;
+      }
+
+      * {
+        margin: 0;
+
+        box-sizing: border-box;
+      }
+
+      html {
+        font-family: "Vazirmatn", sans-serif;
+      }
+
+      body {
+        display: flex;
+        flex-direction: row;
+        height: 100vh;
+        color: #0a2342;
+      }
+
+      .name {
+        flex: 50%;
+      }
+
+      .name h1 {
+        margin: 149px 370px 190px 380px;
+        padding: 0;
+        font-size: 23px;
+      }
+
+      .phote {
+        flex: 50%;
+        background-color: #0a2342;
+      }
+
+      .sitename {
+        box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
+        border: solid #fcfcfc;
+        border-radius: 50px;
+        padding: 0;
+        position: relative;
+        max-width: 802px;
+        margin: 0 199px;
+        display: inline-block;
+      }
+      .sitename h2 {
+        display: inline-block;
+        margin: 59px 110px 0 127px;
+        padding-top: 0;
+
+        font-size: 45px;
+      }
+      .sitename p {
+        margin-left: 196px;
+        margin-top: 23px;
+        font-size: 22px;
+      }
+      form {
+        display: flex;
+      }
+
+      .mobil-number input {
+        width: 100%;
+        margin: 12px 64px 12px 62px;
+        border: 5px solid #234f77;
+        border-radius: 20px;
+        font-size: 18px;
+        direction: ltr;
+        text-align: left;
+        padding: 20px 19px;
+      }
+
+      .mobil-number input::placeholder {
+        color: #4e7bac;
+        direction: ltr;
+        text-align: left;
+        font-size: 23px;
+      }
+      .link {
+        display: block;
+        text-align: right;
+        margin: 5px 72px 40px 90px;
+        text-decoration: none;
+        max-width: 375px;
+        font-size: 15px;
+        color: #778a9f;
+      }
+      .name button {
+        margin: 43px 0 0 220px;
+        padding: 10px 220px;
+        border-radius: 23px;
+        border: 5px solid #27a79c;
+        background-color: #2ec4b6;
+        font-size: 31px;
+        opacity: 58%;
+      }
+      .mobil-number span {
+        position: absolute;
+        right: 88px;
+        top: 59%;
+        transition: opacity 0.3s ease;
+      }
+      .mobil-number input:focus + .icon {
+        opacity: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="phote">
+      <h1>عکس</h1>
+    </div>
+    <div class="name">
+      <h1>اسم سایت</h1>
+      <div class="sitename">
+        <h2>خوش آمدید</h2>
+        <p>شماره موبایل خود را وارد کنید</p>
+        <form action="/sendtop/" method="POST" class="mobil-number" id="form">
+          {%csrf_token%} {{ form.as_p }}
+          <input type="text" placeholder="+98" name="phonenumber" />
+          <span class="icon">
+            <svg
+              class="phone-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="22"
+              height="22"
+              stroke="black"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path
+                d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.14 9.81 19.79 19.79 0 0 1 0 1.92 2 2 0 0 1 2 0h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81A2 2 0 0 1 7 7l-1.3 1.3a16 16 0 0 0 7 7L13 14a2 2 0 0 1 2.47-.3 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"
+              />
+            </svg>
+          </span>
+        </form>
+        <a href="#" class="link"
+          >در صورت ادامه دادن , با شرایط استفاده و سیاست حریم خصوصی ما موافقت می
+          کنید</a
+        >
+      </div>
+      <button type="submit" form="form">تایید</button>
+    </div>
+
+    <!-- <form action="/sendotp/" method="POST">
         {% csrf_token %}
         <input type="text" name="phonenumber" placeholder="09121234567" required>
         <br>
         <button type="submit">ارسال کد</button>
-    </form>
-</body>
+    </form> -->
+  </body>
 </html>
