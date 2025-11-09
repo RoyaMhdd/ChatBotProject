@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>احراز شماره</title>
+  </head>
+  <body>
+    <div class="verify-container">
+      <!-- بخش سمت چپ (مثلاً رنگی یا تصویر) -->
+      <div class="verify-left"></div>
+      <style>
+        body {
+          margin: 0;
+          direction: rtl;
+          font-family: "Vazir", sans-serif; /* فونت دلخواه از Figma */
+          background: #f5f7f9;
+          color: #0a2342;
+        }
+        .verify-container {
+          display: flex;
+          min-height: 100vh;
+        }
+      </style>
+
+      <!-- بخش راست: کارت ورود -->
+      <div class="verify-right">
+        <h1>اسم سایت</h1>
+        <div class="verify-card">
+          <h1 class="verify-title">احراز شماره تلفن همراه</h1>
+
+          <p class="verify-hint">
+            کد تایید ارسال‌شده به شماره
+            <span class="verify-phone">0917</span>
+            را وارد کنید.
+          </p>
+
+          <!-- <div class="verify-error">error</div> -->
+
+          <form method="post" class="verify-form">
+            <div class="verify-otp-row">
+              <input
+                type="text"
+                name="otp"
+                maxlength="1"
+                class="verify-otp-input"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                required
+              />
+              <input
+                type="text"
+                name="otp"
+                maxlength="1"
+                class="verify-otp-input"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                required
+              />
+              <input
+                type="text"
+                name="otp"
+                maxlength="1"
+                class="verify-otp-input"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                required
+              />
+              <input
+                type="text"
+                name="otp"
+                maxlength="1"
+                class="verify-otp-input"
+                inputmode="numeric"
+                pattern="[0-9]*"
+                required
+              />
+            </div>
+            <a href="#" class="verify-change-number">تغییر شماره موبایل</a>
+            <button type="submit" class="verify-button">تأیید</button>
+          </form>
+          <style>
+            .verify-form {
+              margin-bottom: 20px;
+            }
+            .verify-card {
+              text-align: center;
+              padding: 4.8rem;
+              border-radius: 50px;
+              box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+            }
+            .verify-title {
+              margin: 0;
+            }
+            .verify-otp-input {
+              height: 67px;
+              width: 72px;
+              border-radius: 16px;
+              border: 4px solid #234f77;
+              box-shadow: inset 0px 10px 25px rgba(0, 0, 0, 0.1);
+            }
+          </style>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script>
+    console.log("hiii");
+  </script>
+</html>

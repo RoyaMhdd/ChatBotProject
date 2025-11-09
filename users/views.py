@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
+from django.shortcuts import redirect
 # from django.ratelimit.decorators import ratelimit
 from .models import User, OTP
 import secrets
@@ -81,6 +82,9 @@ def verify_otp(request):
 
 
     })
+
+
+
 
 
 
