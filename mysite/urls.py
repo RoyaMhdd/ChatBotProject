@@ -21,8 +21,8 @@ from users import views
 urlpatterns = [
     path('admin/', admin.site.urls),
 path('', views.Home, name='home'),
-    path('api/', include('chat.urls')),  # توجه: api/
-
+path('', include('users.urls')),
+    path('api/', include('chat.urls')),  # تapi/
     path('chat/', include('chat.urls')),
 
 ]

@@ -127,7 +127,8 @@
       <div class="sitename">
         <h2>خوش آمدید</h2>
         <p>شماره موبایل خود را وارد کنید</p>
-        <form action="/sendtop/" method="POST" class="mobil-number" id="form">
+        <form action="{% url 'send_otp' %}" method="POST" class="mobil-number" id="form">
+
           {%csrf_token%} {{ form.as_p }}
           <input type="text" placeholder="+98" name="phonenumber" />
           <span class="icon">
