@@ -51,7 +51,7 @@ def send_otp(request):
 
         if result['return']['status'] != 200:
             print("❌ خطا در ارسال OTP:", result)
-            return JsonResponse({"error": "ارسال پیامک با خطا مواجه شد."}, status=500)
+            return JsonResponse({"error": "ارسال پیامککک با خطا مواجه شد."}, status=500)
         else:
             print("✅ OTP sent successfully:", code)
 
