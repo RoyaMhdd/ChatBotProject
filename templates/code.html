@@ -20,17 +20,21 @@
           display: flex;
           min-height: 100vh;
         }
+        .sitename {
+          text-align: center;
+          margin-bottom: 174px;
+        }
       </style>
 
       <!-- بخش راست: کارت ورود -->
       <div class="verify-right">
-        <h1>اسم سایت</h1>
+        <h1 class="sitename">اسم سایت</h1>
         <div class="verify-card">
           <h1 class="verify-title">احراز شماره تلفن همراه</h1>
 
           <p class="verify-hint">
             کد تایید ارسال‌شده به شماره
-            <span class="verify-phone">0917</span>
+            <span class="verify-phone">09177883407</span>
             را وارد کنید.
           </p>
 
@@ -76,7 +80,6 @@
               />
             </div>
             <a href="#" class="verify-change-number">تغییر شماره موبایل</a>
-            <button type="submit" class="verify-button">تأیید</button>
           </form>
           <style>
             .verify-form {
@@ -84,7 +87,8 @@
             }
             .verify-card {
               text-align: center;
-              padding: 4.8rem;
+              margin: 4.8rem;
+              padding: 79px 71px 68px 78px;
               border-radius: 50px;
               box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
             }
@@ -96,9 +100,54 @@
               width: 72px;
               border-radius: 16px;
               border: 4px solid #234f77;
-              box-shadow: inset 0px 10px 25px rgba(0, 0, 0, 0.1);
+              box-shadow: 10px 10px 10px 5px rgba(66, 65, 65, 0.1) inset;
+              font-size: 40px;
+              text-align: center;
+            }
+            .verify-change-number {
+              display: block;
+              text-align: center;
+              margin-top: 48px;
+              color: #4e7bac;
+              margin-left: 296px;
+              text-decoration: underline;
+              font-size: 17px;
+            }
+            .verify-hint {
+              margin: 0;
+              padding: 35px 0;
+            }
+            .actions {
+              display: flex;
+              gap: 18px;
+              justify-content: center;
+              margin-top: 48px;
+              align-items: center;
+              flex-wrap: wrap;
+            }
+            .btn {
+              width: 238px;
+              height: 74px;
+              border-radius: 23px;
+            }
+            .btn-resend {
+              border: 0;
+              background-color: #8fb3d8;
+              color: #4e7bac;
+              font-size: 20px;
+            }
+            .btn-confirm {
+              color: #0a2342;
+              font-size: 31px;
+              border: 42px;
             }
           </style>
+        </div>
+        <div class="actions">
+          <button type="button" class="btn btn-resend" id="resend-btn" disabled>
+            ارسال مجدد کد 60 ثانیه
+          </button>
+          <button type="submit" class="btn btn-confirm">تایید</button>
         </div>
       </div>
     </div>
