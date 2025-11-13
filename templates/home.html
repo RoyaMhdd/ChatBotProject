@@ -3,25 +3,23 @@
   <head>
     <meta charset="UTF-8" />
     <title>ثبت اختراع هوشمند</title>
-
     {% load static %}
+
     <style>
       @font-face {
         font-family: "Vazirmatn";
         src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}")
           format("truetype");
-        font-weight: normal;
-        font-style: normal;
       }
 
       * {
         margin: 0;
-
         box-sizing: border-box;
       }
 
       html {
         font-family: "Vazirmatn", sans-serif;
+        direction: rtl;
       }
 
       body {
@@ -29,107 +27,194 @@
         flex-direction: row;
         height: 100vh;
         color: #0a2342;
-      }
-
-      .name {
-        flex: 50%;
-      }
-
-      .name h1 {
-        margin: 149px 370px 190px 380px;
-        padding: 0;
-        font-size: 23px;
+        direction: ltr;
       }
 
       .phote {
-        flex: 50%;
+        flex: 1;
         background-color: #0a2342;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 2rem;
+      }
+
+      .name {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 40px;
+      }
+
+      .name h1 {
+        font-size: 26px;
+        margin-bottom: 195px;
       }
 
       .sitename {
-        box-shadow: 0 0 20px 5px rgba(0, 0, 0, 0.2);
-        border: solid #fcfcfc;
+        width: 100%;
+        max-width: 503px;
+        background-color: #fff;
+        box-shadow: 0 10px 52px 11px rgba(19, 17, 17, 0.1);
         border-radius: 50px;
-        padding: 0;
-        position: relative;
-        max-width: 802px;
-        margin: 0 199px;
-        display: inline-block;
+        padding: 40px 20px;
+        text-align: center;
       }
-      .sitename h2 {
-        display: inline-block;
-        margin: 59px 110px 0 127px;
-        padding-top: 0;
 
-        font-size: 45px;
+      .sitename h2 {
+        font-size: 36px;
+        margin-bottom: 15px;
       }
-      .sitename p {
-        margin-left: 196px;
-        margin-top: 23px;
+
+      .sitename h3 {
         font-size: 22px;
+        margin-bottom: 27px;
+        margin-left: 130px;
+        margin-top: 37px;
       }
+
       form {
-        display: flex;
+        position: relative;
       }
 
       .mobil-number input {
         width: 100%;
-        margin: 12px 64px 12px 62px;
         border: 5px solid #234f77;
-        border-radius: 20px;
+        border-radius: 23px;
         font-size: 18px;
         direction: ltr;
         text-align: left;
-        padding: 20px 19px;
+        padding: 23px 11px;
+        max-width: 368px;
+        margin-left: 70px;
       }
 
       .mobil-number input::placeholder {
         color: #4e7bac;
-        direction: ltr;
-        text-align: left;
         font-size: 23px;
       }
+
+      .mobil-number span {
+        position: absolute;
+        right: 40px;
+        top: 53%;
+        transform: translateY(-50%);
+      }
+
       .link {
         display: block;
         text-align: right;
-        margin: 5px 72px 40px 90px;
+        margin-top: 15px;
         text-decoration: none;
-        max-width: 375px;
-        font-size: 15px;
+        font-size: 14px;
         color: #778a9f;
+        max-width: 337px;
+        margin-left: 87px;
+        margin-bottom: 36px;
       }
+
       .name button {
-        margin: 43px 0 0 220px;
-        padding: 10px 220px;
+        margin-top: 40px;
+        padding: 15px 159px;
         border-radius: 23px;
-        border: 5px solid #27a79c;
-        background-color: #2ec4b6;
-        font-size: 31px;
-        opacity: 58%;
+        border: 4px solid #27a79c;
+        background-color: #30c7b9;
+        font-size: 22px;
+
+        cursor: pointer;
+        opacity: 68%;
       }
-      .mobil-number span {
-        position: absolute;
-        right: 88px;
-        top: 59%;
-        transition: opacity 0.3s ease;
+
+      .name button:hover {
+        opacity: 1;
       }
-      .mobil-number input:focus + .icon {
-        opacity: 0;
+
+      @media (max-width: 992px) {
+        body {
+          flex-direction: column;
+          height: auto;
+        }
+
+        .phote {
+          flex: none;
+          height: 250px;
+          font-size: 1.5rem;
+        }
+
+        .name {
+          padding: 20px;
+        }
+
+        .sitename {
+          margin: 0 auto;
+          padding: 30px 15px;
+        }
+
+        .sitename h2 {
+          font-size: 28px;
+        }
+
+        .sitename p {
+          font-size: 16px;
+        }
+
+        .name button {
+          width: 100%;
+          padding: 12px 0;
+          font-size: 20px;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .sitename {
+          width: 90%;
+          padding: 20px;
+        }
+
+        .mobil-number input {
+          font-size: 16px;
+        }
+
+        .link {
+          font-size: 12px;
+        }
+
+        .name h1 {
+          font-size: 20px;
+          margin-bottom: 20px;
+        }
+
+        .name button {
+          font-size: 18px;
+          border-width: 3px;
+        }
       }
     </style>
   </head>
+
   <body>
     <div class="phote">
       <h1>عکس</h1>
     </div>
+
     <div class="name">
       <h1>اسم سایت</h1>
+
       <div class="sitename">
         <h2>خوش آمدید</h2>
-        <p>شماره موبایل خود را وارد کنید</p>
+        <h3>شماره موبایل خود را وارد کنید</h3>
+
         <form action="/sendtop/" method="POST" class="mobil-number" id="form">
-          {%csrf_token%} {{ form.as_p }}
-          <input type="text" placeholder="+98" name="phonenumber" />
+          {% csrf_token %}
+          <input
+            type="text"
+            placeholder="+98"
+            name="phonenumber"
+            inputmode="numeric"
+          />
           <span class="icon">
             <svg
               class="phone-icon"
@@ -147,19 +232,14 @@
             </svg>
           </span>
         </form>
+
         <a href="#" class="link"
-          >در صورت ادامه دادن , با شرایط استفاده و سیاست حریم خصوصی ما موافقت می
-          کنید</a
+          >در صورت ادامه دادن، با شرایط استفاده و سیاست حریم خصوصی ما موافقت
+          .می‌کنید</a
         >
       </div>
+
       <button type="submit" form="form">تایید</button>
     </div>
-
-    <!-- <form action="/sendotp/" method="POST">
-        {% csrf_token %}
-        <input type="text" name="phonenumber" placeholder="09121234567" required>
-        <br>
-        <button type="submit">ارسال کد</button>
-    </form> -->
   </body>
 </html>
