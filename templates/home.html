@@ -167,6 +167,9 @@
           font-size: 20px;
         }
       }
+      .mobil-number input:focus + .icon {
+        opacity: 0;
+      }
 
       @media (max-width: 576px) {
         .sitename {
@@ -205,10 +208,10 @@
 
       <div class="sitename">
         <h2>خوش آمدید</h2>
-<<<<<<< HEAD
+
         <h3>شماره موبایل خود را وارد کنید</h3>
 
-        <form action="/sendtop/" method="POST" class="mobil-number" id="form">
+        <form action="sendotp" method="POST" class="mobil-number" id="form">
           {% csrf_token %}
           <input
             type="text"
@@ -216,13 +219,6 @@
             name="phonenumber"
             inputmode="numeric"
           />
-=======
-        <p>شماره موبایل خود را وارد کنید</p>
-        <form action="{% url 'send_otp' %}" method="POST" class="mobil-number" id="form">
-
-          {%csrf_token%} {{ form.as_p }}
-          <input type="text" placeholder="+98" name="phonenumber" />
->>>>>>> ccb240677841a9a66adae511eb8ca69537d483d6
           <span class="icon">
             <svg
               class="phone-icon"
