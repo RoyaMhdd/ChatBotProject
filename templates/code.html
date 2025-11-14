@@ -3,9 +3,79 @@
   <head>
     <meta charset="UTF-8" />
     <title>احراز شماره</title>
+    <style>
+      body {
+        margin: 0;
+        direction: rtl;
+        font-family: "Vazir", sans-serif;
+        background: #f5f7f9;
+        color: #0a2342;
+      }
+      .verify-container {
+        display: flex;
+        min-height: 100vh;
+      }
+      .sitename {
+        text-align: center;
+        margin-bottom: 40px;
+      }
+      .verify-card {
+        text-align: center;
+        margin: auto;
+        padding: 50px;
+        border-radius: 30px;
+        box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+        background: #fff;
+      }
+      .verify-title {
+        margin-bottom: 10px;
+      }
+      .verify-otp-input {
+        height: 60px;
+        width: 60px;
+        border-radius: 12px;
+        border: 3px solid #234f77;
+        font-size: 32px;
+        text-align: center;
+        margin: 5px;
+      }
+      .verify-change-number {
+        display: block;
+        text-align: center;
+        margin-top: 25px;
+        color: #4e7bac;
+        text-decoration: underline;
+        font-size: 17px;
+      }
+      .actions {
+        display: flex;
+        gap: 18px;
+        justify-content: center;
+        margin-top: 40px;
+      }
+      .btn {
+        width: 200px;
+        height: 60px;
+        border-radius: 20px;
+        cursor: pointer;
+      }
+      .btn-resend {
+        border: 0;
+        background-color: #8fb3d8;
+        color: #4e7bac;
+        font-size: 18px;
+      }
+      .btn-confirm {
+        background-color: #4e7bac;
+        color: #fff;
+        font-size: 22px;
+        border: none;
+      }
+    </style>
   </head>
   <body>
     <div class="verify-container">
+<<<<<<< HEAD
       <!-- بخش سمت چپ (مثلاً رنگی یا تصویر) -->
       <div class="verify-left"></div>
       {% load static %}
@@ -37,131 +107,106 @@
 
       <!-- بخش راست: کارت ورود -->
       <div class="verify-right">
+=======
+      <div class="verify-card">
+>>>>>>> 04c76405bb8222aa0d8836be1b77e19375b94e6f
         <h1 class="sitename">اسم سایت</h1>
-        <div class="verify-card">
-          <h1 class="verify-title">احراز شماره تلفن همراه</h1>
+        <h2 class="verify-title">احراز شماره تلفن همراه</h2>
 
+<<<<<<< HEAD
           <p class="verify-hint">
             کد تایید ارسال‌شده به شماره
             <span class="verify-phone">{{phone_number}}</span>
             را وارد کنید.
           </p>
+=======
+        <p class="verify-hint">
+          کد تایید ارسال‌شده به شماره
+          <span id="phone-number">{{ phone_number }}</span>
+          را وارد کنید.
+        </p>
+>>>>>>> 04c76405bb8222aa0d8836be1b77e19375b94e6f
 
-          <!-- <div class="verify-error">error</div> -->
+        <form
+          id="verify-form"
+          method="post"
+          action="/verify-otp/"
+          onsubmit="return sendOTP(event)"
+        >
+          {% csrf_token %}
+          <input type="hidden" name="phonenumber" value="{{ phone_number }}" />
+          <div class="verify-otp-row">
+            <input
+              type="text"
+              maxlength="1"
+              class="verify-otp-input"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              required
+            />
+            <input
+              type="text"
+              maxlength="1"
+              class="verify-otp-input"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              required
+            />
+            <input
+              type="text"
+              maxlength="1"
+              class="verify-otp-input"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              required
+            />
+            <input
+              type="text"
+              maxlength="1"
+              class="verify-otp-input"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              required
+            />
+          </div>
 
-          <form method="post" class="verify-form">
-            <div class="verify-otp-row">
-              <input
-                type="text"
-                name="otp"
-                maxlength="1"
-                class="verify-otp-input"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                required
-              />
-              <input
-                type="text"
-                name="otp"
-                maxlength="1"
-                class="verify-otp-input"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                required
-              />
-              <input
-                type="text"
-                name="otp"
-                maxlength="1"
-                class="verify-otp-input"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                required
-              />
-              <input
-                type="text"
-                name="otp"
-                maxlength="1"
-                class="verify-otp-input"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                required
-              />
-            </div>
-            <a href="#" class="verify-change-number">تغییر شماره موبایل</a>
-          </form>
-          <style>
-            .verify-form {
-              margin-bottom: 20px;
-            }
-            .verify-card {
-              text-align: center;
-              margin: 4.8rem;
-              padding: 79px 71px 68px 78px;
-              border-radius: 50px;
-              box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
-            }
-            .verify-title {
-              margin: 0;
-            }
-            .verify-otp-input {
-              height: 67px;
-              width: 72px;
-              border-radius: 16px;
-              border: 4px solid #234f77;
-              box-shadow: 10px 10px 10px 5px rgba(66, 65, 65, 0.1) inset;
-              font-size: 40px;
-              text-align: center;
-            }
-            .verify-change-number {
-              display: block;
-              text-align: center;
-              margin-top: 48px;
-              color: #4e7bac;
-              margin-left: 296px;
-              text-decoration: underline;
-              font-size: 17px;
-            }
-            .verify-hint {
-              margin: 0;
-              padding: 35px 0;
-            }
-            .actions {
-              display: flex;
-              gap: 18px;
-              justify-content: center;
-              margin-top: 48px;
-              align-items: center;
-              flex-wrap: wrap;
-            }
-            .btn {
-              width: 238px;
-              height: 74px;
-              border-radius: 23px;
-            }
-            .btn-resend {
-              border: 0;
-              background-color: #8fb3d8;
-              color: #4e7bac;
-              font-size: 20px;
-            }
-            .btn-confirm {
-              color: #0a2342;
-              font-size: 31px;
-              border: 42px;
-            }
-          </style>
-        </div>
-        <div class="actions">
-          <button type="button" class="btn btn-resend" id="resend-btn" disabled>
-            ارسال مجدد کد 60 ثانیه
-          </button>
-          <button type="submit" class="btn btn-confirm">تایید</button>
-        </div>
+          <div class="actions">
+            <button type="button" class="btn btn-resend" id="resend-btn" disabled>
+              ارسال مجدد کد (60 ثانیه)
+            </button>
+            <button type="submit" class="btn btn-confirm">تأیید</button>
+          </div>
+        </form>
       </div>
     </div>
+
+    <script>
+      // جمع کردن اعداد داخل inputها و ارسال
+      function sendOTP(event) {
+        event.preventDefault();
+        const inputs = document.querySelectorAll(".verify-otp-input");
+        let code = "";
+        inputs.forEach((inp) => (code += inp.value));
+
+        const phone = document.querySelector('input[name="phonenumber"]').value;
+
+        fetch("/verify-otp/", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: `phonenumber=${phone}&code=${code}`,
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "success") {
+              alert("✅ ورود موفق!");
+            } else {
+              alert("❌ " + data.error);
+            }
+          })
+          .catch((err) => alert("خطا در ارتباط با سرور"));
+      }
+    </script>
   </body>
-  <script>
-    console.log("hiii");
-  </script>
 </html>
