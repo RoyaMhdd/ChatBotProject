@@ -8,11 +8,20 @@
     <div class="verify-container">
       <!-- بخش سمت چپ (مثلاً رنگی یا تصویر) -->
       <div class="verify-left"></div>
+      {% load static %}
       <style>
+        @font-face {
+          font-family: "Vazirmatn";
+          src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}")
+            format("truetype");
+        }
+        html {
+          font-family: "Vazirmatn", sans-serif;
+        }
         body {
           margin: 0;
           direction: rtl;
-          font-family: "Vazir", sans-serif; /* فونت دلخواه از Figma */
+
           background: #f5f7f9;
           color: #0a2342;
         }
@@ -34,7 +43,7 @@
 
           <p class="verify-hint">
             کد تایید ارسال‌شده به شماره
-            <span class="verify-phone">09177883407</span>
+            <span class="verify-phone">{{phone_number}}</span>
             را وارد کنید.
           </p>
 
