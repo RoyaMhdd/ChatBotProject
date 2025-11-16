@@ -27,7 +27,9 @@ def send_otp(request):
 
     # اعتبارسنجی شماره
     if not phonenumber or len(phonenumber) != 11 or not phonenumber.startswith('09'):
-        return JsonResponse({"error": "Invalid phone number"}, status=400)
+       return render(request, "home.html", {
+        "error": "شماره موبایل نامعتبر است!"
+    })
 
     # ساخت یا دریافت کاربر
     user, _ = User.objects.get_or_create(phonenumber=phonenumber)
