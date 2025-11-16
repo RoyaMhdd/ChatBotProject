@@ -203,7 +203,7 @@
         margin-right: 0;
         padding: 10px 30px 21px 10px;
         background-color: #e63946;
-        opacity: 0;
+        opacity: 1;
         z-index: 2;
       }
     </style>
@@ -261,10 +261,11 @@
       </div>
 
       <button type="submit" form="form">تایید</button>
-
+      {%if error%}
       <div class="wrongnumber" id="error">
         شماره موبایل خود را اشتباه وارد کرده اید
       </div>
+      {%endif%}
     </div>
   </body>
 </html>
