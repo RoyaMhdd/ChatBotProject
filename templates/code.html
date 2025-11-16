@@ -61,9 +61,13 @@
               />
               {%endfor%}
             </div>
-            <a href="home.html" class="verify-change-number"
-              >تغییر شماره موبایل</a
-            >
+<!--            <a href="home.html" class="verify-change-number"-->
+<!--              >تغییر شماره موبایل</a-->
+<!--            >-->
+            <a href="{% url 'home' %}" class="verify-change-number">
+    تغییر شماره موبایل
+</a>
+
           </form>
           <style>
             .verify-form {
