@@ -193,14 +193,14 @@
     </div>
     <style>
       .chat-main {
-        padding: 40px 50px;
+        padding: 40px 70px;
       }
       .chat-bubble {
-        margin-top: 285px;
-        margin-right: 57%;
+        margin-top: 256px;
+        margin-right: 50%;
         padding: 26px;
         background-color: #d9d9d9;
-        max-width: 25%;
+        width: 25%;
         margin-bottom: 74px;
         border-radius: 30px;
       }
@@ -211,15 +211,15 @@
       .chat-input-box {
         display: flex;
         flex-direction: column;
-        width: 90%;
+        max-width: 80%;
         background-color: #6493c5;
         padding: 13px;
         padding-bottom: 0;
-        border-radius: 50px;
+        border-radius: 30px;
       }
       .chat-input {
         margin-bottom: 4px;
-        border-radius: 27px;
+        border-radius: 17px;
         padding: 16px 40px 16px 10px;
         background-color: #a3c7ec;
         border: none;
@@ -239,6 +239,47 @@
         border: 2px solid #0a2342;
         height: 37px;
         background-color: #a3c7ec;
+      }
+      @media (max-width: 768px) {
+        .chat-header {
+          height: 75px;
+          border-radius: 0;
+        }
+
+        .site-logo {
+          font-size: 16px;
+        }
+
+        .sidebar {
+          width: 200px;
+        }
+
+        .chat-bubble {
+          max-width: 1154px;
+          margin-top: 10px;
+        }
+      }
+
+      @media (max-width: 480px) {
+        body {
+          font-size: 7px;
+        }
+
+        .chat-header {
+          height: 65px;
+        }
+
+        .menu-icon {
+          font-size: 26px;
+        }
+
+        .site-logo {
+          font-size: 14px;
+        }
+
+        .chat-input {
+          padding: 10px;
+        }
       }
     </style>
 
