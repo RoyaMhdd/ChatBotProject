@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>انتخاب نقش</title>
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        background: #f6f9fc;
+        font-family: "IRANSans", sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        text-align: center;
+        width: 90%;
+        max-width: 500px;
+      }
+
+      h2 {
+        font-size: 24px;
+        margin-bottom: 40px;
+        color: #002855;
+      }
+
+      .role-box {
+        border: 3px solid #607ea8;
+        padding: 15px 20px;
+        border-radius: 50px;
+        margin: 12px 0;
+        display: flex;
+
+        align-items: center;
+        cursor: pointer;
+        transition: 0.3s;
+        background: white;
+      }
+
+      .role-box:hover {
+        background: #eef3ff;
+      }
+
+      .selected {
+        border-color: #2d70d5 !important;
+        background: #e6f0ff !important;
+      }
+
+      .icon {
+        font-size: 26px;
+        color: #254b7c;
+      }
+
+      .login-btn {
+        margin-top: 30px;
+        width: 10%;
+        position: fixed;
+
+        left: 35%;
+        padding: 15px 0;
+        border-radius: 50px;
+        background: #2ec4b6;
+
+        font-size: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+        border: 4px solid #27a79c;
+        color: #002f35;
+      }
+
+      .login-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>با چه عنوانی می‌خواهید وارد شوید؟</h2>
+
+      <div class="role-box" onclick="selectRole('user')" id="userBox">
+        <span class="icon">👤</span>
+        <span>کاربر عادی</span>
+      </div>
+
+      <div class="role-box" onclick="selectRole('company')" id="companyBox">
+        <span class="icon">🏢</span>
+        <span>شرکت ثبت اختراع</span>
+      </div>
+
+      <button class="login-btn" id="loginBtn" disabled>ورود</button>
+    </div>
+
+    <script>
+      let selectedRole = null;
+
+      function selectRole(role) {
+        selectedRole = role;
+
+        document.getElementById("userBox").classList.remove("selected");
+        document.getElementById("companyBox").classList.remove("selected");
+
+        if (role === "user") {
+          document.getElementById("userBox").classList.add("selected");
+        } else {
+          document.getElementById("companyBox").classList.add("selected");
+        }
+
+        document.getElementById("loginBtn").disabled = false;
+      }
+
+      document
+        .getElementById("loginBtn")
+        .addEventListener("click", function () {
+          alert("نقش انتخاب شده: " + selectedRole);
+        });
+    </script>
+  </body>
+</html>
