@@ -6,14 +6,12 @@
   </head>
   <body>
     <div class="verify-container">
-      <!-- بخش سمت چپ (مثلاً رنگی یا تصویر) -->
       <div class="verify-left"></div>
       {% load static %}
       <style>
         @font-face {
           font-family: "Vazirmatn";
-          src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}")
-            format("truetype");
+          src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}") format("truetype");
         }
         html {
           font-family: "Vazirmatn", sans-serif;
@@ -22,7 +20,6 @@
           margin: 0;
           direction: rtl;
           padding-right: 90px;
-
           background: #f5f7f9;
           color: #0a2342;
         }
@@ -36,9 +33,9 @@
         }
       </style>
 
-      <!-- بخش راست: کارت ورود -->
       <div class="verify-right">
         <h1 class="sitename">اسم سایت</h1>
+
         <div class="verify-card">
           <h1 class="verify-title">احراز شماره تلفن همراه</h1>
 
@@ -48,32 +45,35 @@
             را وارد کنید.
           </p>
 
-          <form method="post" class="verify-form">
+          <!-- فرم کامل و اصلاح‌شده -->
+          <form method="post" class="verify-form" action="{% url 'verify_otp' %}">
+            {% csrf_token %}
+
+            <!-- شماره موبایل صحیح (اصلاح‌شده) -->
+            <input type="hidden" name="phonenumber" value="{{ phone_number }}" />
+
             <div class="verify-otp-row">
-              {% for i in "1234" %}
-              <input
-                type="text"
-                maxlength="1"
-                autocomplete="off"
-                class="verify-otp-input"
-                inputmode="numeric"
-                pattern="[0-9]*"
-                required
-              />
-              {%endfor%}
+              <input type="text" maxlength="1" autocomplete="off" class="verify-otp-input" inputmode="numeric" pattern="[0-9]*" name="digit1" required />
+              <input type="text" maxlength="1" autocomplete="off" class="verify-otp-input" inputmode="numeric" pattern="[0-9]*" name="digit2" required />
+              <input type="text" maxlength="1" autocomplete="off" class="verify-otp-input" inputmode="numeric" pattern="[0-9]*" name="digit3" required />
+              <input type="text" maxlength="1" autocomplete="off" class="verify-otp-input" inputmode="numeric" pattern="[0-9]*" name="digit4" required />
             </div>
 
             <a href="{% url 'home' %}" class="verify-change-number">
               تغییر شماره موبایل
             </a>
+
+            <button type="submit" class="btn btn-confirm" style="margin-top: 40px;">
+              تایید
+            </button>
           </form>
+
           <style>
             .verify-form {
               margin-bottom: 20px;
             }
             .verify-card {
               text-align: center;
-
               padding: 79px 71px 68px 78px;
               border-radius: 50px;
               box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
@@ -126,54 +126,19 @@
               color: #0a2342;
               font-size: 31px;
               border: 4px solid #27a79c;
-
               background-color: #30c7b9;
-            }
-            @media (max-width: 1024px) {
-              .verify-container {
-                flex-direction: column;
-              }
-              .verify-left {
-                display: none;
-              }
-              .verify-right {
-                padding: 20px;
-              }
-              .verify-card {
-                padding: 40px 25px;
-
-                width: 90%;
-              }
-            }
-
-            @media (max-width: 600px) {
-              .verify-card {
-                border-radius: 25px;
-                padding: 30px 20px;
-              }
-
-              .verify-otp-input {
-                width: 50px;
-                height: 55px;
-                font-size: 28px;
-              }
-
-              .btn {
-                width: 180px;
-                height: 55px;
-                font-size: 20px;
-              }
             }
           </style>
         </div>
+
         <div class="actions">
           <button type="button" class="btn btn-resend" id="resend-btn" disabled>
             ارسال مجدد کد 60 ثانیه
           </button>
-          <button type="submit" class="btn btn-confirm">تایید</button>
         </div>
       </div>
     </div>
+
     <script>
       const inputs = document.querySelectorAll(".verify-otp-input");
 
@@ -182,20 +147,17 @@
           let value = e.target.value.replace(/\D/g, "");
           e.target.value = value;
 
-          // اگر فقط یک رقم بود → برو بعدی
           if (value && index < inputs.length - 1) {
             inputs[index + 1].focus();
           }
         });
 
-        // رفتن به فیلد قبل وقتی Backspace زده می‌شود
         input.addEventListener("keydown", (e) => {
           if (e.key === "Backspace" && !input.value && index > 0) {
             inputs[index - 1].focus();
           }
         });
 
-        // جلوگیری از select شدن ورودی هنگام فوکوس
         input.addEventListener("focus", (e) => {
           setTimeout(() => {
             input.selectionStart = input.selectionEnd = input.value.length;
