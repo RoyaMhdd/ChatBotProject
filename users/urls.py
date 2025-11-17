@@ -6,6 +6,9 @@ urlpatterns = [
     path('sendotp', views.send_otp, name='send_otp'),
     path('verify/', views.verify, name='verify_page'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
+    path('dashbord/',views.dashboard, name='dashboard'),
+    path('new-chat/', views.new_chat, name='new_chat')
+
 
 
 ]
