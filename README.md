@@ -12,7 +12,7 @@ Open your **Command Prompt** (or terminal) and run:
 
 ```bash
 git clone https://github.com/RoyaMhdd/ChatBotProject.git
-cd PatentProject
+cd ChatBotProject
 ```
 
 ---
