@@ -11,7 +11,7 @@ Follow these steps to set up the project on your local machine.
 Open your **Command Prompt** (or terminal) and run:
 
 ```bash
-git clone https://github.com/Ox50R0U5H/PatentProject.git
+git clone https://github.com/RoyaMhdd/ChatBotProject.git
 cd PatentProject
 ```
 
