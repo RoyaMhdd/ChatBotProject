@@ -210,18 +210,33 @@
         display: flex;
         flex-direction: column;
         gap: 20px;
+        margin-bottom: 200px;
       }
       #user-chat {
         display: flex;
         flex-direction: column;
+
+        gap: 16px;
+        align-items: flex-start;
       }
+      .user-massage {
+        flex-direction: row-reverse;
+
+        padding: 26px;
+        background-color: #a3c7ec;
+        width: 25%;
+        margin-right: 20%;
+        white-space: normal;
+        overflow-wrap: break-word;
+        border-radius: 30px;
+      }
+
       .chat-bubble {
-        margin-top: 256px;
-        margin-right: 50%;
+        margin-right: 55%;
         padding: 26px;
         background-color: #d9d9d9;
         width: 25%;
-        margin-bottom: 74px;
+
         border-radius: 30px;
       }
       .chat-bubble span {
@@ -233,9 +248,15 @@
         flex-direction: column;
         max-width: 80%;
         background-color: #6493c5;
+        position: fixed;
+        top: 80%;
+        bottom: 20%;
+        left: 10%;
+        right: 10%;
         padding: 13px;
-        padding-bottom: 0;
+        padding-bottom: 100px;
         border-radius: 30px;
+        opacity: 0.8;
       }
       .chat-input-box input[type="text"] {
         flex: 1;
@@ -254,7 +275,7 @@
         border: none;
       }
       .options {
-        margin-right: 60px;
+        margin-right: 40px;
         display: flex;
         padding: 0;
       }
@@ -274,6 +295,9 @@
         border: 2px solid #0a2342;
         height: 37px;
         background-color: #a3c7ec;
+        text-decoration: none;
+        color: #2b2d43;
+        padding: 8px 4px 0 4px;
       }
       @media (max-width: 768px) {
         .chat-header {
@@ -295,9 +319,9 @@
         }
       }
 
-      @media (max-width: 480px) {
+      @media (max-width: 300px) {
         body {
-          font-size: 7px;
+          font-size: 30px;
         }
 
         .chat-header {
@@ -309,7 +333,7 @@
         }
 
         .site-logo {
-          font-size: 14px;
+          font-size: 30px;
         }
 
         .chat-input {
@@ -327,9 +351,8 @@
 
         function addChatMessage(msg, fromUser = true) {
           const bubble = document.createElement("div");
-          bubble.className = "chat-bubble bot";
-          bubble.style.backgroundColor = "blue";
-          bubble.style.marginTop = "12px";
+          bubble.className = "user-massage";
+
           bubble.innerText = msg;
 
           if (fromUser) bubble.style.alignSelf = "end-flex";
@@ -344,6 +367,20 @@
           const file = this.files && this.files[0];
           if (!file) return;
           messageInput.value = file.name; // فقط نمایش در input
+          const formData = new FormData();
+          formData.append("file", file);
+
+          fetch("/upload-file/", {
+            method: "POST",
+            body: formData,
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              console.log("File uploaded:", data);
+            })
+            .catch((error) => {
+              console.error("Upload error:", error);
+            });
         });
 
         // send text message with Enter
