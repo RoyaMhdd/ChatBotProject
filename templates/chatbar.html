@@ -71,11 +71,12 @@
           left: 0;
           top: 0;
 
-          width: 20%;
+          width: 10%;
           height: 100vh;
           color: black;
           transition: 0.3s ease;
           overflow-y: auto;
+
           transform: translateX(-100%);
         }
 
@@ -84,28 +85,31 @@
         }
         .sidebar-title {
           border-bottom-left-radius: 45px;
-
+          border-bottom-right-radius: 45px;
           background: #0b1d36;
           color: white;
-
+          height: 65px;
+          padding-top: 20px;
           text-align: center;
           margin: 0;
-          font-size: 20px;
-          height: inherit;
+
+          border-right: 1px solid black;
+          font-size: 16px;
         }
         .sidebar-list {
-          width: 100%;
           display: grid;
           margin: 0;
         }
         .sidebar-list a {
           border: 1px solid black;
+          border-top: none;
           padding: 30px;
           margin: 0;
+          text-align: center;
         }
 
         .chat-header.header-shrink {
-          width: 80%;
+          width: 90%;
           border-bottom-left-radius: 0;
         }
         #uploadfile {
@@ -215,7 +219,7 @@
       #user-chat {
         display: flex;
         flex-direction: column;
-
+        margin-left: 150px;
         gap: 16px;
         align-items: flex-start;
       }
@@ -397,11 +401,33 @@
               addChatMessage(`📄 ${text}`);
             } else {
               addChatMessage(text);
+              sendToBackend(text);
             }
 
             messageInput.value = "";
           }
         });
+
+        async function sendToBackend(message) {
+          const response = await fetch("/chat-api/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRF(),
+            },
+            body: JSON.stringify({ message: message }),
+          });
+
+          const data = await response.json();
+          addChatMessage(data.reply);
+        }
+
+        function getCSRF() {
+          const cookieValue = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("csrftoken="));
+          return cookieValue ? cookieValue.split("=")[1] : "";
+        }
       });
 
       function toggleSidebar() {
