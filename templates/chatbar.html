@@ -2,14 +2,12 @@
 <html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>چت بات</title>
     <link rel="stylesheet" />
   </head>
   <body>
-    <!-- کانتینر کلی -->
     <div class="chat-container">
-      <!-- نوار بالا -->
-
       <header class="chat-header" id="sidebar">
         <button class="menu-icon" id="menuToggle" onclick="toggleSidebar()">
           ☰
@@ -22,6 +20,10 @@
           margin: 0;
           padding: 0;
           height: 100vh;
+        }
+        * {
+          position: relative;
+          z-index: 1;
         }
         .chat-container {
           display: flex;
@@ -55,7 +57,6 @@
         }
       </style>
 
-      <!-- سایدبار تاریخچه -->
       <aside class="sidebar" id="sidebar">
         <ul class="sidebar-list">
           <h2 class="sidebar-title">تاریخچه</h2>
@@ -219,7 +220,7 @@
       #user-chat {
         display: flex;
         flex-direction: column;
-        margin-left: 150px;
+        margin-left: 15px;
         gap: 16px;
         align-items: flex-start;
       }
@@ -303,45 +304,53 @@
         color: #2b2d43;
         padding: 8px 4px 0 4px;
       }
-      @media (max-width: 768px) {
-        .chat-header {
-          height: 75px;
-          border-radius: 0;
-        }
-
-        .site-logo {
-          font-size: 16px;
-        }
-
+      @media (max-width: 1400px) {
         .sidebar {
-          width: 200px;
+          width: 20%;
         }
 
-        .chat-bubble {
-          max-width: 1154px;
-          margin-top: 10px;
+        .sidebar ul li {
+          font-size: 16px;
+          padding: 8px 0;
+        }
+        .chat-header.header-shrink {
+          max-width: 80%;
         }
       }
-
-      @media (max-width: 300px) {
-        body {
-          font-size: 30px;
-        }
-
-        .chat-header {
-          height: 65px;
-        }
-
-        .menu-icon {
-          font-size: 26px;
-        }
-
+      @media (max-width: 600px) {
         .site-logo {
-          font-size: 30px;
+          font-size: 10px;
+        }
+        .chat-main {
+          font-size: 10px;
+        }
+        #user-chat {
+          margin-left: 30px;
+        }
+        .chat-header {
+          font-size: 3px;
+          height: 80px;
+        }
+        .sidebar-list {
+          padding: 0;
+        }
+        .menu-icon {
+          font-size: 24px;
+        }
+        .sidebar {
+          width: 50%;
+          z-index: 9999;
+          background-color: white;
+        }
+        .sidebar-title {
+          font-size: 7px;
+          border-bottom-left-radius: 20px;
+          border-bottom-right-radius: 20px;
+          height: 58px;
         }
 
-        .chat-input {
-          padding: 10px;
+        .chat-header.header-shrink {
+          max-width: 43%;
         }
       }
     </style>
