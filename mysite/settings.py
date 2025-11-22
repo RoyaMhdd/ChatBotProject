@@ -30,7 +30,12 @@ import environ
 env = environ.Env()
 environ.Env.read_env()
 
+
+USE_MOCK = True     # اگر API Key هنوز نیست → True
+# وقتی API Key آمد می‌گذاری False
+
 OPENAI_API_KEY = env("OPENAI_API_KEY")
+
 
 
 
@@ -138,5 +143,14 @@ STATICFILES_DIRS = [
 ]
 from dotenv import load_dotenv
 load_dotenv()
+# OPENAI_API_KEY = env("OPENAI_API_KEY")
+
+
+USE_MOCK = True     # اگر API Key هنوز نیست → True
+# وقتی API Key آمد می‌گذاری False
+
+OPENAI_API_KEY = env("OPENAI_API_KEY")
+
+
 
 

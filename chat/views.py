@@ -4,13 +4,6 @@ from rest_framework import status
 
 from .service import ask_openai
 
-if not USE_MOCK:
-    import openai
-    import os
-    from config.settings import OPENAI_API_KEY
-    openai.api_key = OPENAI_API_KEY
-
-
 SYSTEM_PROMPT = """
 تو یک متخصص ثبت اختراع هستی. به زبان ساده و دقیق، راهنمایی تخصصی ثبت اختراع بده.
 """
@@ -25,7 +18,7 @@ class ChatAPIView(APIView):
 
         messages = [
             {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message}
+            {"role": "user", "content": user_message},
         ]
 
         reply = ask_openai(messages)
