@@ -1,56 +1,27 @@
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-import json
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
-# -------------------------------
-# سوئیچ حالت Mock یا واقعی
-# -------------------------------
-USE_MOCK = True  # True = فقط Mock, False = OpenAI
+from .service import ask_openai
 
-if not USE_MOCK:
-    import openai
-    import os
-    from mysite.settings import OPENAI_API_KEY
-    openai.api_key = OPENAI_API_KEY
 
-# تابع Mock
-def mock_chat_response(user_message):
-    return f"این پاسخ شبیه‌سازی شده به: {user_message}"
+SYSTEM_PROMPT = """
+تو یک متخصص ثبت اختراع هستی. به زبان ساده و دقیق، راهنمایی تخصصی ثبت اختراع بده.
+"""
 
-# view اصلی
-@csrf_exempt
-def chat_api(request):
-    if request.method != 'POST':
-        return JsonResponse({"error": "Method not allowed"}, status=405)
+class ChatAPIView(APIView):
 
-    # خواندن داده‌ها
-    if request.content_type == "application/json":
-        try:
-            data = json.loads(request.body)
-        except:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
-    else:
-        data = request.POST
+    def post(self, request):
+        user_message = request.data.get("message")
 
-    user_message = data.get("message")
-    if not user_message:
-        return JsonResponse({"error": "No message provided"}, status=400)
+        if not user_message:
+            return Response({"error": "پیام نباید خالی باشد."}, status=400)
 
-    # حالت Mock یا OpenAI
-    if USE_MOCK:
-        ai_message = mock_chat_response(user_message)
-    else:
-        try:
-            response = openai.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": user_message}],
-                temperature=0.2
-            )
-            ai_message = response.choices[0].message.content
-        except Exception as e:
-            return JsonResponse({"error": str(e)}, status=500)
+        messages = [
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_message}
+        ]
 
-    return JsonResponse({"reply": ai_message})
+        reply = ask_openai(messages)
 
-# Create your views here.
+        return Response({"reply": reply}, status=200)

@@ -26,6 +26,12 @@ SECRET_KEY = 'django-insecure-g=c_8!u^3vc92fj!41^fd(*6wti*g04yrr$&&o64sx*4m0k5*0
 DEBUG = True
 
 ALLOWED_HOSTS = []
+import environ
+env = environ.Env()
+environ.Env.read_env()
+
+OPENAI_API_KEY = env("OPENAI_API_KEY")
+
 
 
 # Application definition
@@ -130,5 +136,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'mysite/static'),
 ]
+from dotenv import load_dotenv
+load_dotenv()
 
 
