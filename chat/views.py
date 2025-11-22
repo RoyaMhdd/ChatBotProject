@@ -11,7 +11,7 @@ USE_MOCK = True  # True = فقط Mock, False = OpenAI
 if not USE_MOCK:
     import openai
     import os
-    from mysite.settings import OPENAI_API_KEY
+    from config.settings import OPENAI_API_KEY
     openai.api_key = OPENAI_API_KEY
 
 # تابع Mock
