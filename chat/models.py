@@ -14,7 +14,7 @@ class Conversation(models.Model):
 
 
 class Message(models.Model):
-    
+
     ROLE_USER = "user"
     ROLE_AI = "assistant"
 
@@ -23,9 +23,18 @@ class Message(models.Model):
         (ROLE_AI, "Assistant"),
     ]
 
-    conversation = models.ForeignKey(Conversation, related_name="messages", on_delete=models.CASCADE)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES) 
+    conversation = models.ForeignKey(
+        Conversation,
+        related_name="messages",
+        on_delete=models.CASCADE
+    )
+
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     content = models.TextField()
+
+    file = models.FileField(upload_to="chat_files/", null=True, blank=True)
+
+    metadata = models.JSONField(null=True, blank=True)
 
     created_at = models.DateTimeField(default=timezone.now)
 
