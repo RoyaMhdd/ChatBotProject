@@ -12,7 +12,7 @@ def ask_openai(messages):
 
     # حالت MOCK
     if USE_MOCK or not OPENAI_API_KEY:
-        return " پاسخ تستی ."
+        return "  پاسخ تستی ."
 
     # حالت واقعی (OpenAI)
     from openai import OpenAI
