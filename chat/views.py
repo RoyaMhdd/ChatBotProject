@@ -12,6 +12,7 @@ class ChatAPIView(APIView):
 
     def post(self, request):
         user_message = request.data.get("message")
+       
 
         if not user_message:
             return Response({"error": "پیام نباید خالی باشد."}, status=400)

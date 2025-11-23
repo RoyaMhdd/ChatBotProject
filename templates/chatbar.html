@@ -370,16 +370,26 @@
 
           if (fromUser) bubble.style.alignSelf = "end-flex";
           chatWrapper.appendChild(bubble);
-          // keep viewport scrolled to bottom
 
           chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-        // uploadFile is triggered by the 📎 label — only show name in input
+        function addChatReply(msg, fromUser = true) {
+          const bubble = document.createElement("div");
+          bubble.className = "chat-bubble";
+
+          bubble.innerText = msg;
+
+          if (fromUser) bubble.style.alignSelf = "end-flex";
+          chatWrapper.appendChild(bubble);
+
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+
         uploadFile.addEventListener("change", function () {
           const file = this.files && this.files[0];
           if (!file) return;
-          messageInput.value = file.name; // فقط نمایش در input
+          messageInput.value = file.name;
           const formData = new FormData();
           formData.append("file", file);
 
@@ -402,7 +412,6 @@
             const text = messageInput.value.trim();
             if (!text) return;
 
-            // if input contains a file name (ends with common file ext), show a file-style message
             const isFileName = /\.(pdf|docx?|pptx?|jpg|jpeg|png|gif)$/i.test(
               text
             );
@@ -418,17 +427,17 @@
         });
 
         async function sendToBackend(message) {
-          const response = await fetch("/chat-api/", {
+          const response = await fetch("/api/chat/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-CSRFToken": getCSRF(),
+              // "X-CSRFToken": getCSRF(),
             },
             body: JSON.stringify({ message: message }),
           });
 
           const data = await response.json();
-          addChatMessage(data.reply);
+          addChatReply(data.reply);
         }
 
         function getCSRF() {
