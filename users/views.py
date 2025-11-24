@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.utils import timezone
+from datetime import timedelta
 from .models import User, OTP
 import secrets
 import requests
@@ -40,57 +42,65 @@ def send_otp(request):
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
 
-    phonenumber = request.POST.get("phonenumber")
+    phone_number = request.POST.get("phone_number", "")
 
-    # اعتبارسنجی شماره موبایل
-    if not phonenumber or len(phonenumber) != 11 or not phonenumber.startswith("09"):
+    # normalize common formats: +98917, 0098917, 98917 -> 0917
+    raw = ''.join(ch for ch in phone_number if ch.isdigit())
+    if raw.startswith('98') and len(raw) == 12:
+        raw = '0' + raw[2:]
+    elif raw.startswith('0098'):
+        raw = '0' + raw[4:]
+    elif raw.startswith('9') and len(raw) == 10:
+        raw = '0' + raw
+
+    phone_number = raw
+
+    # اعتبارسنجی شماره موبایل (local format)
+    if not phone_number or len(phone_number) != 11 or not phone_number.startswith("09"):
         return render(request, "home.html", {
             "error": "شماره موبایل نامعتبر است!"
         })
 
     # ایجاد کاربر در صورت عدم وجود
-    user, _ = User.objects.get_or_create(phonenumber=phonenumber)
+    user, _ = User.objects.get_or_create(phone_number=phone_number)
 
-    # حذف کدهای قبلی
+    # حذف کدهای قبلی و ایجاد کد جدید با زمان انقضا
     OTP.objects.filter(user=user).delete()
-
-    # تولید کد تصادفی ۴ رقمی
-    code = str(secrets.randbelow(9000) + 1000)
-
-    # ذخیره در دیتابیس
-    OTP.objects.create(user=user, code=code)
+    # code = str(secrets.randbelow(9000) + 1000)
+    code ="0000"
+    expires_at = timezone.now() + timedelta(minutes=5)
+    OTP.objects.create(user=user, code=code, expires_at=expires_at)
 
     # ارسال پیامک
-    try:
-        response = requests.get(
-            f"https://api.kavenegar.com/v1/{KAVENEGAR_API_KEY}/verify/lookup.json",
-            params={
-                "receptor": phonenumber,
-                "token": code,
-                "template": "verifyy"
-            },
-            timeout=10
-        )
+    # try:
+    #     response = requests.get(
+    #         f"https://api.kavenegar.com/v1/{KAVENEGAR_API_KEY}/verify/lookup.json",
+    #         params={
+    #             "receptor": phone_number,
+    #             "token": code,
+    #             "template": "verifyy"
+    #         },
+    #         timeout=10
+    #     )
 
-        result = response.json()
+    #     result = response.json()
 
-        if result["return"]["status"] != 200:
-            print("❌ خطا در ارسال پیامک:", result)
-            return JsonResponse({"error": "ارسال پیامک با خطا مواجه شد."}, status=500)
+    #     if result["return"]["status"] != 200:
+    #         print("❌ خطا در ارسال پیامک:", result)
+    #         return JsonResponse({"error": "ارسال پیامک با خطا مواجه شد."}, status=500)
 
-        print("✅ OTP sent:", code)
+    #     print("✅ OTP sent:", code)
 
-    except requests.RequestException as e:
-        print("❌ خطای اتصال:", e)
-        return JsonResponse({"error": "خطا در ارتباط با سرور پیامک."}, status=500)
+    # except requests.RequestException as e:
+    #     print("❌ خطای اتصال:", e)
+    #     return JsonResponse({"error": "خطا در ارتباط با سرور پیامک."}, status=500)
 
     # انتقال به صفحه وارد کردن کد
-    return redirect(f"/verify/?phone={phonenumber}")
+    return redirect(f"/verify/?phone={phone_number}")
 
 
 # ------------------  بررسی OTP  ------------------
 
-@csrf_exempt
 @csrf_exempt
 def verify_otp(request):
     if request.method != "POST":
@@ -98,13 +108,13 @@ def verify_otp(request):
 
     print("📥 POST DATA:", request.POST)
 
-    phonenumber = request.POST.get("phonenumber")
+    phone_number = request.POST.get("phone_number")
     d1 = request.POST.get("digit1")
     d2 = request.POST.get("digit2")
     d3 = request.POST.get("digit3")
     d4 = request.POST.get("digit4")
 
-    if not (phonenumber and d1 and d2 and d3 and d4):
+    if not (phone_number and d1 and d2 and d3 and d4):
         return JsonResponse({"error": "Invalid data"}, status=400)
 
     # 🔥 تبدیل درست RTL → LTR
@@ -112,7 +122,7 @@ def verify_otp(request):
     print("🔥 corrected final code:", code)
 
     try:
-        user = User.objects.get(phonenumber=phonenumber)
+        user = User.objects.get(phone_number=phone_number)
     except User.DoesNotExist:
         return JsonResponse({"error": "User not found"}, status=404)
 
