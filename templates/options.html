@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>سوال چند گزینه‌ای - اختراعات</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .quiz-container {
+        background-color: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 500px;
+        padding: 30px;
+        text-align: center;
+      }
+
+      h1 {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-size: 1.5rem;
+        line-height: 1.4;
+      }
+
+      .options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+      }
+
+      .option {
+        background-color: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 15px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 1rem;
+        text-align: right;
+      }
+
+      .option:hover {
+        background-color: #e9ecef;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+
+      .option.selected {
+        background-color: #4dabf7;
+        color: white;
+        border-color: #339af0;
+      }
+
+      .submit-btn {
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 15px 30px;
+        font-size: 1rem;
+        cursor: pointer;
+        margin-top: 25px;
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .submit-btn:active {
+        transform: translateY(0);
+      }
+
+      .progress-bar {
+        height: 6px;
+        background-color: #e9ecef;
+        border-radius: 3px;
+        margin-bottom: 25px;
+        overflow: hidden;
+      }
+
+      .progress {
+        height: 100%;
+        background: linear-gradient(to right, #6a11cb, #2575fc);
+        width: 60%;
+        border-radius: 3px;
+      }
+
+      .question-number {
+        color: #6c757d;
+        font-size: 0.9rem;
+        margin-bottom: 10px;
+      }
+
+      @media (max-width: 480px) {
+        .quiz-container {
+          padding: 20px;
+        }
+
+        h1 {
+          font-size: 1.3rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="quiz-container">
+      <div class="question-number">سوال ۱ از ۵</div>
+      <div class="progress-bar">
+        <div class="progress"></div>
+      </div>
+
+      <h1>اختراعات از کدام دسته است؟</h1>
+
+      <div class="options">
+        <div class="option">فرآیند</div>
+        <div class="option">هر دو دسته</div>
+        <div class="option">فراورده</div>
+      </div>
+
+      <button class="submit-btn">ثبت پاسخ</button>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const options = document.querySelectorAll(".option");
+        const submitBtn = document.querySelector(".submit-btn");
+
+        options.forEach((option) => {
+          option.addEventListener("click", function () {
+            // حذف کلاس selected از همه گزینه‌ها
+            options.forEach((opt) => opt.classList.remove("selected"));
+
+            // اضافه کردن کلاس selected به گزینه انتخاب شده
+            this.classList.add("selected");
+          });
+        });
+
+        submitBtn.addEventListener("click", function () {
+          const selectedOption = document.querySelector(".option.selected");
+
+          if (selectedOption) {
+            alert(`پاسخ شما "${selectedOption.textContent}" ثبت شد.`);
+          } else {
+            alert("لطفاً یک گزینه را انتخاب کنید.");
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
