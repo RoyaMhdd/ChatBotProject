@@ -3,6 +3,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.utils import timezone
 from datetime import timedelta
+
+from users.decorator import login_required
 from .models import User, OTP
 import secrets
 import requests
@@ -141,10 +143,29 @@ def verify_otp(request):
         return JsonResponse({"error": "OTP expired"}, status=400)
 
     otp.delete()
+    
+    token = secrets.token_hex(32)
+    user.token = token
+    user.save()
+
+    request.session["auth_token"] = token
+    request.session.set_expiry(timedelta(days=7))
+
     return redirect("dashboard")
 
 
+@login_required
 def dashboard(request):
-    return render(request, "main-page.html")
+    return render(request, "main-page.html", {"user": request.user})
+
+@login_required
 def new_chat(request):
     return render(request, "chatbar.html")
+
+def logout_view(request):
+    if request.user:
+        request.user.token = None
+        request.user.save()
+
+    request.session.flush()
+    return redirect("home")
