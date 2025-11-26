@@ -28,10 +28,9 @@ DEBUG = env.bool("DEBUG", default=True)
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
 # اگر API Key نداری این مقدار True باشه
-USE_MOCK = env.bool("USE_MOCK", default=True)
 
-# API Key
 OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+USE_MOCK = env.bool("USE_MOCK", default=True)
 
 # -----------------------------------
 # APPS

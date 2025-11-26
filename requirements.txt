@@ -27,3 +27,10 @@ typing-inspection==0.4.2
 typing_extensions==4.15.0
 tzdata==2025.2
 urllib3==2.5.0
+
+SECRET_KEY=django-insecure-xyz123...
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+
+USE_MOCK=False
+OPENAI_API_KEY="Our keyyyyy"
