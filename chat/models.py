@@ -4,7 +4,7 @@ from users.models import User
 
 
 class Conversation(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversations")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="conversations", null=True, blank=True)
     title = models.CharField(max_length=255, blank=True)
     created_at = models.DateTimeField(default=timezone.now)
     updated_at = models.DateTimeField(auto_now=True)
