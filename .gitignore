@@ -1,6 +1,7 @@
-__pycache__/
 *.pyc
+__pycache__/
+env/
+venv/
+*.env
 db.sqlite3
-.idea/
-.env
-
+*.log

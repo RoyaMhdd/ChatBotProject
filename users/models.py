@@ -7,6 +7,7 @@ class User(models.Model):
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    token = models.CharField(max_length=64, null=True, blank=True)
 
     def __str__(self):
         return self.phone_number or ""
