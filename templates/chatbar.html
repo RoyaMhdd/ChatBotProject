@@ -298,11 +298,11 @@
         margin-right: 4px;
         border-radius: 20px;
         border: 2px solid #0a2342;
-        height: 37px;
+        margin-top: 4px;
         background-color: #a3c7ec;
         text-decoration: none;
         color: #2b2d43;
-        padding: 8px 4px 0 4px;
+        padding: 5px 8px;
       }
       @media (max-width: 1400px) {
         .sidebar {
@@ -374,14 +374,13 @@
           chatWindow.scrollTop = chatWindow.scrollHeight;
         }
 
-      function addChatReply(msg) {
-    const bubble = document.createElement("div");
-    bubble.className = "chat-bubble";
-    bubble.innerText = msg;
-    chatWrapper.appendChild(bubble);
-    chatWindow.scrollTop = chatWindow.scrollHeight;
-}
-
+        function addChatReply(msg) {
+          const bubble = document.createElement("div");
+          bubble.className = "chat-bubble";
+          bubble.innerText = msg;
+          chatWrapper.appendChild(bubble);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
         uploadFile.addEventListener("change", function () {
           const file = this.files && this.files[0];
@@ -423,31 +422,28 @@
           }
         });
 
-    async function sendToBackend(message) {
-    const response = await fetch("/api/chat/", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRFToken": getCSRF(),
+        async function sendToBackend(message) {
+          const response = await fetch("/api/chat/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": getCSRF(),
+            },
+            body: JSON.stringify({
+              message: message,
+              conversation_id: window.currentConversationId || null,
+            }),
+          });
 
-        },
-        body: JSON.stringify({
-            message: message,
-            conversation_id: window.currentConversationId || null
-        }),
-    });
+          const data = await response.json();
 
-    const data = await response.json();
+          // ذخیره شناسه مکالمه برای ادامه همان چت
+          if (data.conversation_id) {
+            window.currentConversationId = data.conversation_id;
+          }
 
-    // ذخیره شناسه مکالمه برای ادامه همان چت
-    if (data.conversation_id) {
-        window.currentConversationId = data.conversation_id;
-    }
-
-    addChatReply(data.reply);
-}
-
-
+          addChatReply(data.reply);
+        }
 
         function getCSRF() {
           const cookieValue = document.cookie
