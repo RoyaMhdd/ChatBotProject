@@ -7,6 +7,9 @@ class User(models.Model):
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+    
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
     token = models.CharField(max_length=64, null=True, blank=True)
 
     def __str__(self):

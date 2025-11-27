@@ -30,7 +30,7 @@
 
       .role-box {
         border: 3px solid #607ea8;
-        padding: 15px 20px;
+        padding: 5px 20px;
         border-radius: 50px;
         margin: 12px 0;
         display: flex;
@@ -45,19 +45,20 @@
         background: #eef3ff;
       }
 
-      .selected {
-        border-color: #2d70d5 !important;
-        background: #e6f0ff !important;
+      .pos.selected {
+        border-color: #2ec4b6;
+        color: #2ec4b6;
       }
 
       .icon {
         font-size: 26px;
         color: #254b7c;
+        padding-left: 20px;
       }
 
       .login-btn {
-        margin-top: 30px;
-        width: 10%;
+        margin-top: 40px;
+        width: 20%;
         position: fixed;
 
         left: 35%;
@@ -76,6 +77,13 @@
         opacity: 0.5;
         cursor: not-allowed;
       }
+      .pos {
+        font-size: 23px;
+        color: #234f77;
+      }
+      .user {
+        margin-top: 5px;
+      }
     </style>
   </head>
   <body>
@@ -83,7 +91,7 @@
       <h2>با چه عنوانی می‌خواهید وارد شوید؟</h2>
 
       <div class="role-box" onclick="selectRole('user')" id="userBox">
-        <span class="icon"
+        <span class="icon" id="logo"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -91,6 +99,7 @@
             height="64"
             viewBox="0 0 64 64"
             fill="none"
+            class="user"
           >
             <g filter="url(#filter0_d_16_78)">
               <rect
@@ -155,11 +164,11 @@
             </defs>
           </svg>
         </span>
-        <span>کاربر عادی</span>
+        <span class="pos">کاربر عادی</span>
       </div>
 
       <div class="role-box" onclick="selectRole('company')" id="companyBox">
-        <span class="icon"
+        <span class="icon" id="logo"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -188,7 +197,7 @@
             </defs>
           </svg>
         </span>
-        <span>شرکت ثبت اختراع</span>
+        <span class="pos">شرکت ثبت اختراع</span>
       </div>
 
       <button class="login-btn" id="loginBtn" disabled>ورود</button>
@@ -201,6 +210,7 @@
         selectedRole = role;
 
         document.getElementById("userBox").classList.remove("selected");
+
         document.getElementById("companyBox").classList.remove("selected");
 
         if (role === "user") {
