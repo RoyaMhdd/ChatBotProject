@@ -45,8 +45,10 @@
         background: #eef3ff;
       }
 
-      .pos.selected {
+      .selected {
         border-color: #2ec4b6;
+      }
+      .role-box.selected .pos {
         color: #2ec4b6;
       }
 
@@ -91,7 +93,7 @@
       <h2>با چه عنوانی می‌خواهید وارد شوید؟</h2>
 
       <div class="role-box" onclick="selectRole('user')" id="userBox">
-        <span class="icon" id="logo"
+        <span class="icon" id="ulogo"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -164,11 +166,11 @@
             </defs>
           </svg>
         </span>
-        <span class="pos">کاربر عادی</span>
+        <span class="pos" id="user">کاربر عادی</span>
       </div>
 
       <div class="role-box" onclick="selectRole('company')" id="companyBox">
-        <span class="icon" id="logo"
+        <span class="icon" id="clogo"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
             xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -197,7 +199,7 @@
             </defs>
           </svg>
         </span>
-        <span class="pos">شرکت ثبت اختراع</span>
+        <span class="pos" id="company">شرکت ثبت اختراع</span>
       </div>
 
       <button class="login-btn" id="loginBtn" disabled>ورود</button>
