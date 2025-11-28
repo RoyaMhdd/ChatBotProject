@@ -266,6 +266,32 @@
                 font-size: 20px;
               }
             }
+            .wrongnumber {
+              margin-top: 28px;
+              margin-left: 23%;
+              padding: 10px 30px 20px 30px;
+              background-color: rgba(230, 57, 70, 0.68);
+              position: relative;
+            }
+            .error-progress {
+              position: absolute;
+              bottom: 0;
+              left: 0;
+
+              height: 8px;
+              background: #c50000;
+              width: 100%;
+              animation: shrink 3s linear forwards;
+            }
+
+            @keyframes shrink {
+              from {
+                width: 100%;
+              }
+              to {
+                width: 0%;
+              }
+            }
           </style>
         </div>
 
@@ -276,11 +302,30 @@
           <button type="submit" class="btn btn-confirm" form="form">
             تایید
           </button>
+          {%if error%}
+          <div class="wrongnumber" id="error">
+            شماره موبایل خود را اشتباه وارد کرده اید
+            <div class="error-progress"></div>
+          </div>
+
+          {%endif%}
         </div>
       </div>
     </div>
 
     <script>
+      document.querySelectorAll(".wrongnumber").forEach((box) => {
+        const progress = box.querySelector(".error-progress");
+
+        progress.addEventListener("animationend", () => {
+          box.style.transition = "opacity 0.4s";
+          box.style.opacity = "0";
+
+          setTimeout(() => {
+            box.remove();
+          }, 400);
+        });
+      });
       const inputs = document.querySelectorAll(".verify-otp-input");
 
       inputs.forEach((input, index) => {
