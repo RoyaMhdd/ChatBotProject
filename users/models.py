@@ -3,18 +3,29 @@ from django.utils import timezone
 from datetime import timedelta
 
 class User(models.Model):
+    ROLE_CHOICES = [
+        ('normal', 'Normal User'),
+        ('admin', 'Company Admin'),
+    ]
+
     phone_number = models.CharField(max_length=11, unique=True, null=True, blank=True)
+
     first_name = models.CharField(max_length=50, blank=True)
     last_name = models.CharField(max_length=50, blank=True)
+
+    email = models.EmailField(null=True, blank=True)
+    company_name = models.CharField(max_length=100, null=True, blank=True)
+
+    role = models.CharField(max_length=10, choices=ROLE_CHOICES, null=True, blank=True)
+
+    is_profile_completed = models.BooleanField(default=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
-    
-    is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(default=False)
     token = models.CharField(max_length=64, null=True, blank=True)
 
     def __str__(self):
         return self.phone_number or ""
-
+    
 
 class OTP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -32,4 +43,7 @@ class OTP(models.Model):
     
     def __str__(self):
         return f"{self.user.phone_number} - {self.code}"
+    
+
+
     

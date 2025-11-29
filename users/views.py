@@ -88,13 +88,13 @@ def send_otp(request):
     #     result = response.json()
 
     #     if result["return"]["status"] != 200:
-    #         print("❌ خطا در ارسال پیامک:", result)
+    #         print(" خطا در ارسال پیامک:", result)
     #         return JsonResponse({"error": "ارسال پیامک با خطا مواجه شد."}, status=500)
 
-    #     print("✅ OTP sent:", code)
+    #     print(" OTP sent:", code)
 
     # except requests.RequestException as e:
-    #     print("❌ خطای اتصال:", e)
+    #     print(" خطای اتصال:", e)
     #     return JsonResponse({"error": "خطا در ارتباط با سرور پیامک."}, status=500)
 
     # انتقال به صفحه وارد کردن کد
@@ -108,7 +108,7 @@ def verify_otp(request):
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
 
-    print("📥 POST DATA:", request.POST)
+    print("POST DATA:", request.POST)
 
     phone_number = request.POST.get("phone_number")
     d1 = request.POST.get("digit1")
@@ -119,9 +119,9 @@ def verify_otp(request):
     if not (phone_number and d1 and d2 and d3 and d4):
         return JsonResponse({"error": "Invalid data"}, status=400)
 
-    # 🔥 تبدیل درست RTL → LTR
+    #  تبدیل درست RTL → LTR
     code = f"{d1}{d2}{d3}{d4}"[::-1]
-    print("🔥 corrected final code:", code)
+    print("corrected final code:", code)
 
     try:
         user = User.objects.get(phone_number=phone_number)
@@ -129,13 +129,13 @@ def verify_otp(request):
         return JsonResponse({"error": "User not found"}, status=404)
 
     otp = OTP.objects.filter(user=user).order_by('-created_at').first()
-    print("📌 LAST OTP:", otp)
+    print("LAST OTP:", otp)
 
     if not otp:
         return JsonResponse({"error": "No OTP found"}, status=404)
 
     if otp.code != code:
-        print("❌ WRONG CODE")
+        print("WRONG CODE")
         return JsonResponse({"error": "Invalid OTP"}, status=400)
 
     if not otp.is_valid():
