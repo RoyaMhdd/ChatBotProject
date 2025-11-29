@@ -3,6 +3,13 @@ from django.utils import timezone
 from users.models import User 
 
 class Conversation(models.Model):
+
+    INVENTION_TYPE_CHOICES = [
+        ("process", "Process"),
+        ("product", "Product"),
+        ("hybrid", "Hybrid"),
+    ]
+
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -10,6 +17,8 @@ class Conversation(models.Model):
         null=True,
         blank=True
     )
+
+    invention_type = models.CharField(max_length=10, choices=INVENTION_TYPE_CHOICES, default="process")
 
     title = models.CharField(max_length=255, blank=True)
 
@@ -20,7 +29,6 @@ class Conversation(models.Model):
 
     def __str__(self):
         return self.title or f"Conversation {self.id}"
-
     
 class Message(models.Model):
 
@@ -50,6 +58,7 @@ class Message(models.Model):
         return f"{self.role}: {self.content[:30]}..."
 
 class Invention(models.Model):
+    
     INVENTION_TYPE_CHOICES = [
         ("process", "Process"),
         ("product", "Product"),

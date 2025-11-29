@@ -18,6 +18,7 @@ class User(models.Model):
 
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, null=True, blank=True)
 
+    #to check if user completed profile and login for first time
     is_profile_completed = models.BooleanField(default=False)
 
     created_at = models.DateTimeField(auto_now_add=True)

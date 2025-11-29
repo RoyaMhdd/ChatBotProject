@@ -70,28 +70,18 @@ class ChatAPIView(APIView):
             logger.info(f"Saved user message: {user_msg.id}")
 
             # Build message history for context (last 10 messages)
-            # Map DB roles to OpenAI roles
-            role_map = {
-                Message.ROLE_USER: "user",
-                Message.ROLE_AI: "assistant"
-            }
-
-            # Build message history for context (last 10 messages)
-            raw_history = list(
+            message_history = list(
                 conversation.messages.filter(
                     role__in=[Message.ROLE_USER, Message.ROLE_AI]
-                )
-                .order_by('created_at')
-                .values_list('role', 'content')
-            )[-10:]
+                ).order_by('created_at').values_list('role', 'content')[-10:]
+            )
 
+            # Build messages for OpenAI
             messages = [{"role": "system", "content": SYSTEM_PROMPT}]
-
-            for role, content in raw_history:
-                messages.append({
-                    "role": role_map[role],
-                    "content": content
-                })
+            
+            # Add conversation history
+            for role, content in message_history:
+                messages.append({"role": role, "content": content})
 
             # Get AI response
             reply = ask_openai(messages)
