@@ -22,4 +22,5 @@ users/__pycache__/views.cpython-313.pyc
 users/__pycache__/views.cpython-313.pyc
 db.sqlite3
 .idea/
+prompts/
 

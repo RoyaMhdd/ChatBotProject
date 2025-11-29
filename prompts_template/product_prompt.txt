@@ -1,0 +1,1 @@
+This is a template for the product-related patent prompt. Please replace this template with the actual content for product patents in the production environment.
