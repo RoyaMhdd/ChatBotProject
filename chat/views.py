@@ -197,6 +197,14 @@ class ChatAPIView(APIView):
                 {"role": "system", "content": system_prompt}
             ]
 
+            # اگر قبلاً فرم نهایی برای این مکالمه ذخیره شده، آن را به‌عنوان
+            # آخرین خروجی مدل (assistant) به کانتکست اضافه می‌کنیم
+            if conversation.last_form:
+                messages.append({
+                    "role": "assistant",
+                    "content": conversation.last_form
+                })
+
             for role, content in raw_history:
                 messages.append({
                     "role": role_map[role],
@@ -216,8 +224,11 @@ class ChatAPIView(APIView):
             )
             logger.info(f"Saved AI message: {ai_msg.id}")
 
-            # Update conversation updated_at
-            conversation.save(update_fields=['updated_at'])
+            # فرض: کل خروجی مدل، فرم فعلی اختراع (مثلاً JSON) است
+            conversation.last_form = reply
+
+            # Update conversation last_form and updated_at
+            conversation.save(update_fields=['last_form', 'updated_at'])
 
             logger.info(f"Message saved successfully for conversation {conversation.id}")
 
