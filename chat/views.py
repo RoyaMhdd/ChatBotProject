@@ -8,11 +8,49 @@ import logging
 from .service import ask_openai
 from .models import Conversation, Message
 
+import os
+from django.conf import settings
+
+
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """
-تو یک متخصص ثبت اختراع هستی. به زبان ساده و دقیق، راهنمایی تخصصی ثبت اختراع بده.
-"""
+def load_prompt(invention_type: str) -> str:
+    """
+    یک فایل پرامپت را بر اساس نوع اختراع (process/product/hybrid) می‌خواند.
+    اگر فایل پیدا نشود یا خالی باشد، خطا raise می‌کند.
+    """
+
+    # نوع‌های مجاز
+    valid_types = {"process", "product", "hybrid"}
+    if invention_type not in valid_types:
+        # نوع اختراع اشتباه یا ناشناخته
+        raise ValueError(f"Invalid invention_type: {invention_type}")
+
+    # نام فایل بر اساس نوع اختراع
+    filename = f"{invention_type}.txt"  # مثلاً process.txt
+
+    # مسیر پوشه prompts (در کنار manage.py)
+    prompts_dir = os.path.join(settings.BASE_DIR, "prompts")
+    filepath = os.path.join(prompts_dir, filename)
+
+    # اگر فایل وجود نداشت
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"Prompt file not found: {filepath}")
+
+    # خواندن محتوا
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+    except Exception as e:
+        # هر خطای غیرمنتظره هنگام خواندن فایل
+        raise RuntimeError(f"Error reading prompt file: {str(e)}")
+
+    if not content:
+        # فایل خالی
+        raise ValueError(f"Prompt file is empty: {filepath}")
+
+    return content
+
 
 class ChatAPIView(APIView):
     # Temporarily allow any user for testing - change to IsAuthenticated later
