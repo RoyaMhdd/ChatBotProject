@@ -1,1 +1,0 @@
-This is a template for the hybrid-related patent prompt (combining both product and process). Please replace this template with the actual content for hybrid patents in the production environment.
