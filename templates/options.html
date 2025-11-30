@@ -205,6 +205,55 @@
           });
         });
       })();
+             // حالت تک‌انتخاب: فقط یک انتخاب فعال باشد
+            buttons.forEach((b) => {
+              b.classList.remove("selected");
+              b.setAttribute("aria-pressed", "false");
+            });
+            btn.classList.add("selected");
+            btn.setAttribute("aria-pressed", "true");
+
+            // اگر لازم است، مقدار انتخاب‌شده را بگیر:
+            const value = btn.dataset.value;
+            console.log("selected:", value);
+          });
+        });
+      })();
     </script>
+  <script>
+document.querySelectorAll('.actions .btn').forEach(button => {
+  button.addEventListener('click', async () => {
+    const chatType = button.dataset.value;
+
+    try {
+      const response = await fetch("{% url 'new_chat_api' %}", {
+
+
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": "{{ csrf_token }}"
+        },
+        body: JSON.stringify({ chat_type: chatType })
+      });
+
+      const data = await response.json();
+      if (data.conversation_id) {
+        window.location.href = `/chat/${data.conversation_id}/`;  // مسیر صفحه چت
+      }
+    } catch (err) {
+      alert("خطا در اتصال به سرور");
+      console.error(err);
+    }
+  });
+});
+</script>
+
   </body>
 </html>
+
+    </script>
+
+  </body>
+</html>
+

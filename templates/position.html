@@ -166,7 +166,23 @@
             </defs>
           </svg>
         </span>
-        <span class="pos" id="user">کاربر عادی</span>
+   <span class="pos" id="user">کاربر عادی</span>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const userBtn = document.getElementById("user");
+
+    if (userBtn) {
+        userBtn.style.cursor = "pointer";
+        userBtn.addEventListener("click", function () {
+            window.location.href = "/user-profile/";  // مسیر ثابت
+        });
+    }
+});
+</script>
+
+
+
       </div>
 
       <div class="role-box" onclick="selectRole('company')" id="companyBox">
@@ -200,6 +216,13 @@
           </svg>
         </span>
         <span class="pos" id="company">شرکت ثبت اختراع</span>
+
+<script>
+  document.getElementById("company").addEventListener("click", function () {
+      window.location.href = "{% url 'company_profile' %}";
+  });
+</script>
+
       </div>
 
       <button class="login-btn" id="loginBtn" disabled>ورود</button>

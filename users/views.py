@@ -153,14 +153,35 @@ def verify_otp(request):
 
     return redirect("dashboard")
 
+# views.py
+from django.shortcuts import render, redirect
 
-@login_required
+def dashboard_redirect(request):
+    # نمایش تمپلیت position.html قبل از داشبورد
+    return render(request, 'position.html')
+
+def dashboard_redirect(request):
+    # ا position.html
+    return render(request, 'position.html')
+
+
+def company_profile(request):
+    return render(request, "companyprofile.html")
+
+
+def user_profile(request):
+    return render(request, "userprofile.html")
+
+def main_page(request):
+    return render(request, "main-page.html")
+
 def dashboard(request):
-    return render(request, "main-page.html", {"user": request.user})
 
-@login_required
+    return render(request, 'main-page.html', {"user": request.user})
+
 def new_chat(request):
     return render(request, "chatbar.html")
+
 
 def logout_view(request):
     if request.user:

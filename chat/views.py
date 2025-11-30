@@ -1,3 +1,4 @@
+from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,11 +8,49 @@ import logging
 from .service import ask_openai
 from .models import Conversation, Message
 
+import os
+from django.conf import settings
+
+
 logger = logging.getLogger(__name__)
 
-SYSTEM_PROMPT = """
-تو یک متخصص ثبت اختراع هستی. به زبان ساده و دقیق، راهنمایی تخصصی ثبت اختراع بده.
-"""
+def load_prompt(invention_type: str) -> str:
+    """
+    یک فایل پرامپت را بر اساس نوع اختراع (process/product/hybrid) می‌خواند.
+    اگر فایل پیدا نشود یا خالی باشد، خطا raise می‌کند.
+    """
+
+    # نوع‌های مجاز
+    valid_types = {"process", "product", "hybrid"}
+    if invention_type not in valid_types:
+        # نوع اختراع اشتباه یا ناشناخته
+        raise ValueError(f"Invalid invention_type: {invention_type}")
+
+    # نام فایل بر اساس نوع اختراع
+    filename = f"{invention_type}.txt"  # مثلاً process.txt
+
+    # مسیر پوشه prompts (در کنار manage.py)
+    prompts_dir = os.path.join(settings.BASE_DIR, "prompts")
+    filepath = os.path.join(prompts_dir, filename)
+
+    # اگر فایل وجود نداشت
+    if not os.path.exists(filepath):
+        raise FileNotFoundError(f"Prompt file not found: {filepath}")
+
+    # خواندن محتوا
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+    except Exception as e:
+        # هر خطای غیرمنتظره هنگام خواندن فایل
+        raise RuntimeError(f"Error reading prompt file: {str(e)}")
+
+    if not content:
+        # فایل خالی
+        raise ValueError(f"Prompt file is empty: {filepath}")
+
+    return content
+
 
 class ChatAPIView(APIView):
     # Temporarily allow any user for testing - change to IsAuthenticated later
@@ -124,3 +163,34 @@ class ChatAPIView(APIView):
                 {"error": f"خطای سرور: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+def options_view(request):
+    return render(request, "options.html")
+
+
+class NewChatAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        chat_type = request.data.get("chat_type", "")
+        user = request.user if hasattr(request.user, "id") and request.user.id else None
+
+        conversation = Conversation.objects.create(user=user, title="چت جدید")
+
+        template_text = "نوع چت مورد نظر را انتخاب کنید."
+
+        ai_msg = Message.objects.create(
+            conversation=conversation,
+            role=Message.ROLE_AI,
+            content=template_text
+        )
+
+        return Response({
+            "conversation_id": conversation.id,
+            "template_message": template_text,
+            "ai_message_id": ai_msg.id,
+        }, status=200)
+def chat_view(request, pk):
+        conversation = get_object_or_404(Conversation, id=pk)
+        return render(request, 'chatbar.html', {'conversation': conversation})
