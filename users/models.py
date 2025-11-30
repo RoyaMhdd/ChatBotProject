@@ -16,6 +16,8 @@ class User(models.Model):
     email = models.EmailField(null=True, blank=True)
     company_name = models.CharField(max_length=100, null=True, blank=True)
 
+    is_active = models.BooleanField(default=True)
+
     role = models.CharField(max_length=10, choices=ROLE_CHOICES, null=True, blank=True)
 
     #to check if user completed profile and login for first time

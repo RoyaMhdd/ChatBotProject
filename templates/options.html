@@ -70,7 +70,6 @@
         font-size: 60px;
       }
 
-      /* سوال */
       .question {
         font-size: 48px;
         font-weight: 500;
@@ -79,7 +78,6 @@
         padding: 15px 0 70px 0;
       }
 
-      /* ردیف دکمه‌ها */
       .actions {
         width: 100%;
         display: flex;
@@ -104,7 +102,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 0 18px;
+        padding: 0 100px;
         color: var(--muted-color);
         white-space: nowrap;
       }
@@ -113,7 +111,6 @@
         transform: translateY(-3px);
       }
 
-      /* حالت انتخاب‌شده (همون دکمه سبز تصویر) */
       .btn.selected {
         background: transparent;
         border-color: var(--accent-color);
@@ -121,7 +118,6 @@
         color: var(--accent-color);
       }
 
-      /* اگر بخوای دکمهٔ انتخاب‌شده پس‌زمینه روشن داشته باشه: */
       .btn.selected.fill {
         background: var(--accent-color);
         color: #fff;
@@ -144,7 +140,6 @@
   <body>
     <div class="page-frame" role="main" aria-labelledby="q1">
       <div class="center-card">
-        <!-- لوگو: می‌تونی این SVG را با لوگوی فیگما عوض کنی -->
         <div class="logo" aria-hidden="true">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -180,7 +175,6 @@
 
         <h1 id="q1" class="question">اختراعت از کدام دسته است ؟</h1>
 
-        <!-- دکمه‌ها -->
         <div class="actions" role="group" aria-labelledby="q1">
           <button class="btn" data-value="process" aria-pressed="false">
             فرآیند
@@ -196,22 +190,18 @@
     </div>
 
     <script>
-      // JS سبک برای مدیریت انتخاب دکمه‌ها
       (function () {
         const buttons = Array.from(document.querySelectorAll(".btn"));
+        const hiddenInput = document.getElementById("selectedOption");
+
         buttons.forEach((btn) => {
           btn.addEventListener("click", () => {
-            // حالت تک‌انتخاب: فقط یک انتخاب فعال باشد
             buttons.forEach((b) => {
               b.classList.remove("selected");
               b.setAttribute("aria-pressed", "false");
             });
             btn.classList.add("selected");
             btn.setAttribute("aria-pressed", "true");
-
-            // اگر لازم است، مقدار انتخاب‌شده را بگیر:
-            const value = btn.dataset.value;
-            console.log("selected:", value);
           });
         });
       })();
