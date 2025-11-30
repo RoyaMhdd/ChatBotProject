@@ -14,6 +14,50 @@ SYSTEM_PROMPT = """
 تو یک متخصص ثبت اختراع هستی. به زبان ساده و دقیق، راهنمایی تخصصی ثبت اختراع بده.
 """
 
+
+class ChatHistoryAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            user = request.user if hasattr(request.user, 'id') and request.user.id else None
+            
+            if user:
+                conversations = Conversation.objects.filter(user=user).order_by('-updated_at')
+            else:
+                conversations = Conversation.objects.none()
+
+            logger.info(f"Fetching chat history for user: {user}")
+
+            conversation_list = []
+            for conversation in conversations:
+                first_message = conversation.messages.filter(
+                    role=Message.ROLE_USER
+                ).first()
+                
+                preview = first_message.content[:100] if first_message else "No messages"
+
+                conversation_list.append({
+                    "id": conversation.id,
+                    "title": conversation.title,
+                    "preview": preview,
+                    "created_at": conversation.created_at.isoformat(),
+                    "updated_at": conversation.updated_at.isoformat(),
+                })
+
+            return Response({
+                "conversations": conversation_list,
+                "count": len(conversation_list)
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f"Chat History API Error: {str(e)}", exc_info=True)
+            return Response(
+                {"error": f"خطای سرور: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 class ChatAPIView(APIView):
     # Temporarily allow any user for testing - change to IsAuthenticated later
     permission_classes = [AllowAny]
@@ -153,6 +197,7 @@ class NewChatAPIView(APIView):
             "template_message": template_text,
             "ai_message_id": ai_msg.id,
         }, status=200)
+    
 def chat_view(request, pk):
         conversation = get_object_or_404(Conversation, id=pk)
         return render(request, 'chatbar.html', {'conversation': conversation})

@@ -58,12 +58,13 @@
       </style>
 
       <aside class="sidebar" id="sidebar">
-        <ul class="sidebar-list">
+        <div class="sidebar-list">
           <h2 class="sidebar-title">تاریخچه</h2>
-          <a href="#">ت ۱</a>
-          <a href="#">ت ۲</a>
-          <a href="#">۳ ت</a>
-        </ul>
+          <button class="new-chat-btn" onclick="startNewChat()">+ مکالمه جدید</button>
+          <div class="history-container" id="historyContainer">
+            <p class="empty-message">درحال بارگذاری...</p>
+          </div>
+        </div>
       </aside>
       <style>
         .sidebar {
@@ -100,13 +101,80 @@
         .sidebar-list {
           display: grid;
           margin: 0;
+          height: 100%;
+          grid-template-rows: auto auto 1fr;
         }
-        .sidebar-list a {
+
+        .new-chat-btn {
+          background-color: #0b1d36;
+          color: white;
           border: 1px solid black;
           border-top: none;
-          padding: 30px;
-          margin: 0;
+          padding: 15px 10px;
+          cursor: pointer;
+          font-size: 14px;
+          transition: background-color 0.3s ease;
+        }
+
+        .new-chat-btn:hover {
+          background-color: #0a2342;
+        }
+
+        .history-container {
+          overflow-y: auto;
+          border-right: 1px solid black;
+        }
+
+        .history-item {
+          border: 1px solid black;
+          border-top: none;
+          border-right: 3px solid transparent;
+          padding: 15px 10px;
+          cursor: pointer;
+          text-align: right;
+          transition: background-color 0.3s ease;
+        }
+
+        .history-item:hover {
+          background-color: #f0f0f0;
+          border-right-color: #0b1d36;
+        }
+
+        .history-item.active {
+          background-color: #a3c7ec;
+          border-right-color: #0b1d36;
+        }
+
+        .history-title {
+          font-weight: bold;
+          display: block;
+          margin-bottom: 5px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          font-size: 14px;
+        }
+
+        .history-preview {
+          font-size: 12px;
+          color: #666;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          direction: rtl;
+        }
+
+        .history-date {
+          font-size: 11px;
+          color: #999;
+          margin-top: 5px;
+        }
+
+        .empty-message {
           text-align: center;
+          padding: 20px 10px;
+          color: #999;
+          font-size: 13px;
         }
 
         .chat-header.header-shrink {
@@ -362,12 +430,125 @@ document.addEventListener("DOMContentLoaded", function () {
   const chatWrapper = document.getElementById("user-chat");
   const messageInput = document.getElementById("messageInput");
   const chatWindow = document.getElementById("chatWindow");
+  const historyContainer = document.getElementById("historyContainer");
+
+  let currentConversationId = null;
+
+  // Load chat history on page load
+  loadChatHistory();
+
+  function loadChatHistory() {
+    fetch("/chat/history/", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        "X-CSRFToken": getCSRF(),
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.conversations && data.conversations.length > 0) {
+          displayChatHistory(data.conversations);
+        } else {
+          historyContainer.innerHTML =
+            '<p class="empty-message">هیچ مکالمه‌ای وجود ندارد</p>';
+        }
+      })
+      .catch((error) => {
+        console.error("Error loading chat history:", error);
+        historyContainer.innerHTML =
+          '<p class="empty-message">خطا در بارگذاری تاریخچه</p>';
+      });
+  }
+
+  function displayChatHistory(conversations) {
+    historyContainer.innerHTML = "";
+
+    conversations.forEach((conv) => {
+      const historyItem = document.createElement("div");
+      historyItem.className = "history-item";
+      historyItem.dataset.conversationId = conv.id;
+      historyItem.onclick = () => loadConversation(conv.id);
+
+      const createdDate = new Date(conv.created_at);
+      const dateStr = formatDate(createdDate);
+
+      historyItem.innerHTML = `
+        <span class="history-title">${conv.title || "بدون عنوان"}</span>
+        <span class="history-preview">${conv.preview}</span>
+        <span class="history-date">${dateStr}</span>
+      `;
+
+      historyContainer.appendChild(historyItem);
+    });
+  }
+
+  function formatDate(date) {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+
+    if (date.toDateString() === today.toDateString()) {
+      return date.toLocaleTimeString("fa-IR", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } else if (date.toDateString() === yesterday.toDateString()) {
+      return "دیروز";
+    } else {
+      return date.toLocaleDateString("fa-IR");
+    }
+  }
+
+  function loadConversation(conversationId) {
+    // For now, just log - full implementation would fetch conversation details
+    console.log("Loading conversation:", conversationId);
+    currentConversationId = conversationId;
+    updateActiveHistoryItem(conversationId);
+
+    // Close sidebar on mobile
+    document.querySelector(".sidebar").classList.remove("sidebar-open");
+    document.querySelector(".chat-header").classList.remove("header-shrink");
+  }
+
+  function updateActiveHistoryItem(conversationId) {
+    document.querySelectorAll(".history-item").forEach((item) => {
+      item.classList.remove("active");
+    });
+    const activeItem = document.querySelector(
+      `.history-item[data-conversation-id="${conversationId}"]`
+    );
+    if (activeItem) {
+      activeItem.classList.add("active");
+    }
+  }
+
+  function startNewChat() {
+    currentConversationId = null;
+    window.currentConversationId = null;
+    chatWrapper.innerHTML = `
+      <div class="chat-bubble bot">
+        <span>سلام ،روزت بخیر</span>من آماده‌ام تا درباره اختراعت بشنوم
+      </div>
+    `;
+    messageInput.value = "";
+    messageInput.focus();
+
+    // Remove active state from all history items
+    document.querySelectorAll(".history-item").forEach((item) => {
+      item.classList.remove("active");
+    });
+
+    // Close sidebar on mobile
+    document.querySelector(".sidebar").classList.remove("sidebar-open");
+    document.querySelector(".chat-header").classList.remove("header-shrink");
+  }
 
   function addChatMessage(msg, fromUser = true) {
     const bubble = document.createElement("div");
-    bubble.className = "user-massage";
+    bubble.className = fromUser ? "user-massage" : "chat-bubble";
     bubble.innerText = msg;
-    if (fromUser) bubble.style.alignSelf = "end-flex";
+    if (fromUser) bubble.style.alignSelf = "flex-end";
     chatWrapper.appendChild(bubble);
     chatWindow.scrollTop = chatWindow.scrollHeight;
   }
@@ -400,9 +581,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
       const isFileName = /\.(pdf|docx?|pptx?|jpg|jpeg|png|gif)$/i.test(text);
       if (isFileName) {
-        addChatMessage(`📄 ${text}`);
+        addChatMessage(`📄 ${text}`, true);
       } else {
-        addChatMessage(text);
+        addChatMessage(text, true);
         sendToBackend(text);
       }
 
@@ -415,7 +596,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (USE_MOCK) {
       addChatReply("پاسخ تستی - لطفاً API key را تنظیم کنید.");
-      window.currentConversationId = window.currentConversationId || Math.floor(Math.random() * 1000);
+      window.currentConversationId =
+        window.currentConversationId || Math.floor(Math.random() * 1000);
+      if (!currentConversationId) {
+        loadChatHistory(); // Reload history after new conversation
+      }
       return;
     }
 
@@ -436,6 +621,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (data.conversation_id) {
       window.currentConversationId = data.conversation_id;
+      currentConversationId = data.conversation_id;
+      if (!currentConversationId) {
+        loadChatHistory(); // Reload history after new conversation
+      }
     }
 
     addChatReply(data.reply);
