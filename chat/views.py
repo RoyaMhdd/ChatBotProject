@@ -115,6 +115,7 @@ class ChatAPIView(APIView):
                 Message.ROLE_AI: "assistant"
             }
 
+
             # Build message history for context (last 10 messages)
             raw_history = list(
                 conversation.messages.filter(
@@ -124,13 +125,40 @@ class ChatAPIView(APIView):
                 .values_list('role', 'content')
             )[-10:]
 
-            messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+            # --- بارگذاری system prompt بر اساس نوع اختراع مکالمه ---
+            try:
+                invention_type = conversation.invention_type  # مثلا "process" یا "product" یا "hybrid"
+                system_prompt = load_prompt(invention_type)
+            except FileNotFoundError as e:
+                logger.error(f"Prompt file not found: {str(e)}")
+                return Response(
+                    {"error": "برای این نوع اختراع، فایل پرامپت روی سرور تنظیم نشده است."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            except ValueError as e:
+                logger.error(f"Prompt config error: {str(e)}")
+                return Response(
+                    {"error": "پیکربندی پرامپت برای این نوع اختراع مشکل دارد."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            except Exception as e:
+                logger.error(f"Unexpected prompt loading error: {str(e)}", exc_info=True)
+                return Response(
+                    {"error": "در بارگذاری دستورالعمل سیستم خطایی رخ داد."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+            # Build messages for OpenAI
+            messages = [
+                {"role": "system", "content": system_prompt}
+            ]
 
             for role, content in raw_history:
                 messages.append({
                     "role": role_map[role],
                     "content": content
                 })
+
 
             # Get AI response
             reply = ask_openai(messages)
