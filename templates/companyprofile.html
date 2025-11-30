@@ -111,9 +111,11 @@
       <input id="company" class="input-box" placeholder="نام شرکت" />
       <input id="email" class="input-box" placeholder="ایمیل کاری" />
 
-      <!-- 🔹 دکمه -->
-      <button id="submitBtn">ساخت پروفایل</button>
-    </div>
+
+<button id="submitBtn" onclick="window.location.href='{% url 'dashboard_main' %}'">ساخت پروفایل</button>
+
+
+
 
     <script>
       document.getElementById("submitBtn").addEventListener("click", () => {

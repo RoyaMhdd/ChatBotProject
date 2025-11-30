@@ -1,3 +1,4 @@
+from django.shortcuts import render, get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -124,3 +125,34 @@ class ChatAPIView(APIView):
                 {"error": f"خطای سرور: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+def options_view(request):
+    return render(request, "options.html")
+
+
+class NewChatAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        chat_type = request.data.get("chat_type", "")
+        user = request.user if hasattr(request.user, "id") and request.user.id else None
+
+        conversation = Conversation.objects.create(user=user, title="چت جدید")
+
+        template_text = "نوع چت مورد نظر را انتخاب کنید."
+
+        ai_msg = Message.objects.create(
+            conversation=conversation,
+            role=Message.ROLE_AI,
+            content=template_text
+        )
+
+        return Response({
+            "conversation_id": conversation.id,
+            "template_message": template_text,
+            "ai_message_id": ai_msg.id,
+        }, status=200)
+def chat_view(request, pk):
+        conversation = get_object_or_404(Conversation, id=pk)
+        return render(request, 'chatbar.html', {'conversation': conversation})
