@@ -166,14 +166,12 @@
             </defs>
           </svg>
         </span>
-<<<<<<< HEAD
+        <<<<<<< HEAD
         <span class="pos" id="user">کاربر عادی</span>
-=======
-   <span class="pos" id="user">کاربر عادی</span>
+        =======
+        <span class="pos" id="user">کاربر عادی</span>
 
-
-
->>>>>>> 6d3b1104a5c99a0605298eac182f1241b68b15b1
+        >>>>>>> 6d3b1104a5c99a0605298eac182f1241b68b15b1
       </div>
 
       <div class="role-box" onclick="selectRole('company')" id="companyBox">
@@ -207,29 +205,6 @@
           </svg>
         </span>
         <span class="pos" id="company">شرکت ثبت اختراع</span>
-<<<<<<< HEAD
-=======
-
-<script>
-  document.getElementById("company").addEventListener("click", function () {
-      window.location.href = "{% url 'company_profile' %}";
-  });
-
-
-document.addEventListener("DOMContentLoaded", function () {
-    const userBtn = document.getElementById("user");
-
-    if (userBtn) {
-        userBtn.style.cursor = "pointer";
-        userBtn.addEventListener("click", function () {
-            window.location.href = "/user-profile/";  // مسیر ثابت
-        });
-    }
-});
-</script>
-
-
->>>>>>> 6d3b1104a5c99a0605298eac182f1241b68b15b1
       </div>
 
       <button class="login-btn" id="loginBtn" disabled>ورود</button>
@@ -284,6 +259,20 @@ document.addEventListener("DOMContentLoaded", function () {
             highlightSelection(role);
           });
       }
+      document.getElementById("company").addEventListener("click", function () {
+        window.location.href = "{% url 'company_profile' %}";
+      });
+
+      document.addEventListener("DOMContentLoaded", function () {
+        const userBtn = document.getElementById("user");
+
+        if (userBtn) {
+          userBtn.style.cursor = "pointer";
+          userBtn.addEventListener("click", function () {
+            window.location.href = "/user-profile/"; // مسیر ثابت
+          });
+        }
+      });
     </script>
   </body>
 </html>
