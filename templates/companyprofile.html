@@ -106,15 +106,21 @@
       </div>
 
       <!-- 🔹 ورودی‌ها -->
-      <input id="fullname" class="input-box" placeholder="نام و نام خانوادگی" />
-      <input id="company" class="input-box" placeholder="نام شرکت" />
-      <input id="email" class="input-box" placeholder="ایمیل کاری" />
-      <button
-        id="submitBtn"
-        onclick="window.location.href='{% url 'dashboard_main' %}'"
-      >
-        ساخت پروفایل
-      </button>
+      <form method="POST" action="{% url 'dashboard_main' %}">
+        {% csrf_token %}
+        <input
+          id="fullname"
+          class="input-box"
+          placeholder="نام و نام خانوادگی"
+        />
+        <input id="company" class="input-box" placeholder="نام شرکت" />
+        <input id="email" class="input-box" placeholder="ایمیل کاری" />
+        <button id="submitBtn">
+          <!-- onclick="window.location.href='{% url 'dashboard_main' %}'" -->
+
+          ساخت پروفایل
+        </button>
+      </form>
     </div>
   </body>
 </html>

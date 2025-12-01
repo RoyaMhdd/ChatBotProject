@@ -172,20 +172,24 @@
             </defs>
           </svg>
         </div>
+        <form method="POST" id="answerForm">
+          {% csrf_token %}
+          <input type="hidden" name="selected_option" id="selectedOption" />
 
-        <h1 id="q1" class="question">اختراعت از کدام دسته است ؟</h1>
+          <h1 id="q1" class="question">اختراعت از کدام دسته است ؟</h1>
 
-        <div class="actions" role="group" aria-labelledby="q1">
-          <button class="btn" data-value="process" aria-pressed="false">
-            فرآیند
-          </button>
-          <button class="btn" data-value="product" aria-pressed="false">
-            فرآورده
-          </button>
-          <button class="btn" data-value="both" aria-pressed="false">
-            هر دو دسته
-          </button>
-        </div>
+          <div class="actions" role="group" aria-labelledby="q1">
+            <button class="btn" data-value="process" aria-pressed="false">
+              فرآیند
+            </button>
+            <button class="btn" data-value="product" aria-pressed="false">
+              فرآورده
+            </button>
+            <button class="btn" data-value="both" aria-pressed="false">
+              هر دو دسته
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -203,6 +207,10 @@
             btn.classList.add("selected");
             btn.setAttribute("aria-pressed", "true");
           });
+          hiddenInput.value = btn.dataset.value;
+
+          // ارسال فرم
+          form.submit();
         });
       })();
 
