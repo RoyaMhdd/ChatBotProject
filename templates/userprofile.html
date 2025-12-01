@@ -43,8 +43,12 @@
       <input type="email" placeholder="ایمیل" class="input" />
 
       <!-- دکمه -->
-      <button class="btn" onclick="window.location.href='{% url 'dashboard_main' %}'">ساخت پروفایل</button>
-
+      <button
+        class="btn"
+        onclick="window.location.href='{% url 'dashboard_main' %}'"
+      >
+        ساخت پروفایل
+      </button>
 
       <style>
         body {
@@ -69,7 +73,7 @@
         }
 
         .input {
-          width: 70%;
+          width: 90%;
           height: 70px;
           border-radius: 50px;
           border: 3px solid #4e7bac;
@@ -94,13 +98,17 @@
           font-size: 17px;
           cursor: pointer;
           transition: 0.2s;
-          position: fixed;
+          margin-right: 41%;
           margin-top: 45px;
-          left: 35%;
         }
 
         .btn:hover {
           opacity: 0.9;
+        }
+        @media (max-width: 700px) {
+          .input {
+            height: 40px;
+          }
         }
       </style>
     </div>

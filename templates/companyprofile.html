@@ -7,7 +7,6 @@
 
     <style>
       :root {
-        /* 🎨 رنگ‌ها را فقط از فیگما در اینجا تغییر بده */
         --primary: #3a5f8f;
         --border: #6b8bb5;
         --bg-light: #eef2f5;
@@ -110,36 +109,12 @@
       <input id="fullname" class="input-box" placeholder="نام و نام خانوادگی" />
       <input id="company" class="input-box" placeholder="نام شرکت" />
       <input id="email" class="input-box" placeholder="ایمیل کاری" />
-
-
-<button id="submitBtn" onclick="window.location.href='{% url 'dashboard_main' %}'">ساخت پروفایل</button>
-
-
-
-
-    <script>
-      document.getElementById("submitBtn").addEventListener("click", () => {
-        const fullname = document.getElementById("fullname").value.trim();
-        const company = document.getElementById("company").value.trim();
-        const email = document.getElementById("email").value.trim();
-
-        if (!fullname || !company || !email) {
-          alert("لطفاً همه فیلدها را پر کنید");
-          return;
-        }
-
-        alert(
-          "پروفایل ساخته شد:\n" +
-            "نام: " +
-            fullname +
-            "\n" +
-            "شرکت: " +
-            company +
-            "\n" +
-            "ایمیل: " +
-            email
-        );
-      });
-    </script>
+      <button
+        id="submitBtn"
+        onclick="window.location.href='{% url 'dashboard_main' %}'"
+      >
+        ساخت پروفایل
+      </button>
+    </div>
   </body>
 </html>

@@ -8,7 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('chat', '0005_alter_conversation_options_alter_conversation_user'),
-        ('users', '0005_rename_is_staff_user_is_profile_completed_and_more'),
+       
     ]
 
     operations = [

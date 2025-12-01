@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -81,9 +81,9 @@
         <p>ایمیل</p>
       </div>
 
-<div class="links">
-    <a href="{% url 'options' %}">New Chat</a>
-</div>
+      <div class="links">
+        <a href="{% url 'options' %}">New Chat</a>
+      </div>
     </aside>
     <style>
       body {
@@ -178,8 +178,8 @@
         display: block;
 
         top: 0;
-        left: 0;
-        transform: translateX(-100%);
+        right: 0;
+        transform: translateX(100%);
         width: 15%;
         height: 100vh;
         color: black;

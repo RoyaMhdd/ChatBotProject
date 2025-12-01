@@ -60,7 +60,7 @@
 
       .login-btn {
         margin-top: 40px;
-        width: 20%;
+        min-width: 20%;
         position: fixed;
 
         left: 35%;
@@ -166,23 +166,7 @@
             </defs>
           </svg>
         </span>
-   <span class="pos" id="user">کاربر عادی</span>
-
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const userBtn = document.getElementById("user");
-
-    if (userBtn) {
-        userBtn.style.cursor = "pointer";
-        userBtn.addEventListener("click", function () {
-            window.location.href = "/user-profile/";  // مسیر ثابت
-        });
-    }
-});
-</script>
-
-
-
+        <span class="pos" id="user">کاربر عادی</span>
       </div>
 
       <div class="role-box" onclick="selectRole('company')" id="companyBox">
@@ -216,13 +200,6 @@ document.addEventListener("DOMContentLoaded", function () {
           </svg>
         </span>
         <span class="pos" id="company">شرکت ثبت اختراع</span>
-
-<script>
-  document.getElementById("company").addEventListener("click", function () {
-      window.location.href = "{% url 'company_profile' %}";
-  });
-</script>
-
       </div>
 
       <button class="login-btn" id="loginBtn" disabled>ورود</button>
@@ -263,7 +240,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return cookieValue;
       }
       function selectRole(role) {
-        // ارسال نقش به Django
         fetch("/save-role/", {
           method: "POST",
           headers: {
