@@ -52,6 +52,50 @@ def load_prompt(invention_type: str) -> str:
     return content
 
 
+
+class ChatHistoryAPIView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        try:
+            user = request.user if hasattr(request.user, 'id') and request.user.id else None
+            
+            if user:
+                conversations = Conversation.objects.filter(user=user).order_by('-updated_at')
+            else:
+                conversations = Conversation.objects.none()
+
+            logger.info(f"Fetching chat history for user: {user}")
+
+            conversation_list = []
+            for conversation in conversations:
+                first_message = conversation.messages.filter(
+                    role=Message.ROLE_USER
+                ).first()
+                
+                preview = first_message.content[:100] if first_message else "No messages"
+
+                conversation_list.append({
+                    "id": conversation.id,
+                    "title": conversation.title,
+                    "preview": preview,
+                    "created_at": conversation.created_at.isoformat(),
+                    "updated_at": conversation.updated_at.isoformat(),
+                })
+
+            return Response({
+                "conversations": conversation_list,
+                "count": len(conversation_list)
+            }, status=status.HTTP_200_OK)
+
+        except Exception as e:
+            logger.error(f"Chat History API Error: {str(e)}", exc_info=True)
+            return Response(
+                {"error": f"خطای سرور: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 class ChatAPIView(APIView):
     # Temporarily allow any user for testing - change to IsAuthenticated later
     permission_classes = [AllowAny]
@@ -115,6 +159,7 @@ class ChatAPIView(APIView):
                 Message.ROLE_AI: "assistant"
             }
 
+
             # Build message history for context (last 10 messages)
             raw_history = list(
                 conversation.messages.filter(
@@ -124,13 +169,48 @@ class ChatAPIView(APIView):
                 .values_list('role', 'content')
             )[-10:]
 
-            messages = [{"role": "system", "content": SYSTEM_PROMPT}]
+            # --- بارگذاری system prompt بر اساس نوع اختراع مکالمه ---
+            try:
+                invention_type = conversation.invention_type  # مثلا "process" یا "product" یا "hybrid"
+                system_prompt = load_prompt(invention_type)
+            except FileNotFoundError as e:
+                logger.error(f"Prompt file not found: {str(e)}")
+                return Response(
+                    {"error": "برای این نوع اختراع، فایل پرامپت روی سرور تنظیم نشده است."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            except ValueError as e:
+                logger.error(f"Prompt config error: {str(e)}")
+                return Response(
+                    {"error": "پیکربندی پرامپت برای این نوع اختراع مشکل دارد."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+            except Exception as e:
+                logger.error(f"Unexpected prompt loading error: {str(e)}", exc_info=True)
+                return Response(
+                    {"error": "در بارگذاری دستورالعمل سیستم خطایی رخ داد."},
+                    status=status.HTTP_500_INTERNAL_SERVER_ERROR
+                )
+
+            # Build messages for OpenAI
+            messages = [
+                {"role": "system", "content": system_prompt}
+            ]
+
+            # اگر قبلاً فرم نهایی برای این مکالمه ذخیره شده، آن را به‌عنوان
+            # آخرین خروجی مدل (assistant) به کانتکست اضافه می‌کنیم
+            if conversation.last_form:
+                messages.append({
+                    "role": "assistant",
+                    "content": conversation.last_form
+                })
 
             for role, content in raw_history:
                 messages.append({
                     "role": role_map[role],
                     "content": content
                 })
+
 
             # Get AI response
             reply = ask_openai(messages)
@@ -144,8 +224,11 @@ class ChatAPIView(APIView):
             )
             logger.info(f"Saved AI message: {ai_msg.id}")
 
-            # Update conversation updated_at
-            conversation.save(update_fields=['updated_at'])
+            # فرض: کل خروجی مدل، فرم فعلی اختراع (مثلاً JSON) است
+            conversation.last_form = reply
+
+            # Update conversation last_form and updated_at
+            conversation.save(update_fields=['last_form', 'updated_at'])
 
             logger.info(f"Message saved successfully for conversation {conversation.id}")
 
@@ -191,6 +274,7 @@ class NewChatAPIView(APIView):
             "template_message": template_text,
             "ai_message_id": ai_msg.id,
         }, status=200)
+    
 def chat_view(request, pk):
         conversation = get_object_or_404(Conversation, id=pk)
         return render(request, 'chatbar.html', {'conversation': conversation})
