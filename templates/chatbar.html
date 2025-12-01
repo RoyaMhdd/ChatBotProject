@@ -410,36 +410,73 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  async function sendToBackend(message) {
-    const USE_MOCK = true; // فقط Mock استفاده شود
+<!--  async function sendToBackend(message) {-->
+<!--    const USE_MOCK = false; // فقط Mock استفاده شود-->
 
-    if (USE_MOCK) {
-      addChatReply("پاسخ تستی - لطفاً API key را تنظیم کنید.");
-      window.currentConversationId = window.currentConversationId || Math.floor(Math.random() * 1000);
-      return;
+<!--    if (USE_MOCK) {-->
+<!--      addChatReply("پاسخ تستی - لطفاً API key را تنظیم کنید.");-->
+<!--      window.currentConversationId = window.currentConversationId || Math.floor(Math.random() * 1000);-->
+<!--      return;-->
+<!--    }-->
+
+<!--    // حالت واقعی - تماس با سرور-->
+<!--    const response = await fetch("/api/chat/", {-->
+<!--      method: "POST",-->
+<!--      headers: {-->
+<!--        "Content-Type": "application/json",-->
+<!--        "X-CSRFToken": getCSRF(),-->
+<!--      },-->
+<!--      body: JSON.stringify({-->
+<!--        message: message,-->
+<!--        conversation_id: window.currentConversationId || null,-->
+<!--      }),-->
+<!--    });-->
+
+<!--    const data = await response.json();-->
+
+<!--    if (data.conversation_id) {-->
+<!--      window.currentConversationId = data.conversation_id;-->
+<!--    }-->
+
+<!--    addChatReply(data.reply);-->
+<!--  }-->
+
+
+async function sendToBackend(message) {
+    const USE_MOCK = false; // حتماً false باشد تا سرور واقعی صدا زده شود
+
+    try {
+        const response = await fetch("/api/chat/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRF(),
+            },
+            body: JSON.stringify({
+                message: message,
+                conversation_id: window.currentConversationId || null,
+            }),
+        });
+
+        const data = await response.json();
+
+        // ذخیره conversation_id
+        if (data.conversation_id) {
+            window.currentConversationId = data.conversation_id;
+        }
+
+        // بررسی reply و خطا
+        const replyText = data.reply || data.error || "⚠️ پاسخ سرور نامشخص است";
+        addChatReply(replyText);
+
+    } catch (err) {
+        console.error("Fetch error:", err);
+        addChatReply("⚠️ خطا در اتصال به سرور");
     }
+}
 
-    // حالت واقعی - تماس با سرور
-    const response = await fetch("/api/chat/", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRFToken": getCSRF(),
-      },
-      body: JSON.stringify({
-        message: message,
-        conversation_id: window.currentConversationId || null,
-      }),
-    });
 
-    const data = await response.json();
 
-    if (data.conversation_id) {
-      window.currentConversationId = data.conversation_id;
-    }
-
-    addChatReply(data.reply);
-  }
 
   function getCSRF() {
     const cookieValue = document.cookie
