@@ -15,6 +15,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # -----------------------------------
 # ENVIRONMENT VARIABLES
 # -----------------------------------
+# -----------------------------------
+# ENVIRONMENT VARIABLES
+# -----------------------------------
+
+import environ
+import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
 environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
@@ -22,15 +31,16 @@ environ.Env.read_env(os.path.join(BASE_DIR, ".env"))
 # امنیت
 SECRET_KEY = env("SECRET_KEY", default="dummy-secret-key-for-dev")
 
-# برای دولوپمنت
+# برای توسعه
 DEBUG = env.bool("DEBUG", default=True)
-
 ALLOWED_HOSTS = env.list("ALLOWED_HOSTS", default=[])
 
-# اگر API Key نداری این مقدار True باشه
-
-OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+# ⚠️ این دو متغیر **همین جا** تعریف شوند
 USE_MOCK = env.bool("USE_MOCK", default=True)
+OPENAI_API_KEY = env("OPENAI_API_KEY", default="")
+
+print(f"[DEBUG] USE_MOCK={USE_MOCK}, OPENAI_API_KEY={'set' if OPENAI_API_KEY else 'not set'}")
+
 
 # -----------------------------------
 # APPS

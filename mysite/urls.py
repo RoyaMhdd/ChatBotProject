@@ -7,7 +7,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('users.urls')),       # مسیرهای کاربران
     path('chat/', include('chat.urls')),   # مسیرهای HTML چت
-    path('api/chat/', include('chat.urls')),  # مسیرهای API چت
+    path('api/', include('chat.urls')),    # مسیرهای API چت
+
 ]
 
 if settings.DEBUG:

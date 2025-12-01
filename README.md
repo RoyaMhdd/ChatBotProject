@@ -85,3 +85,14 @@ USE_MOCK=True
 OPENAI_API_KEY=Our api Keyyyyyy
 
 
+
+
+.env
+SECRET_KEY=django-insecure-xyz123...
+DEBUG=True
+ALLOWED_HOSTS=127.0.0.1,localhost
+USE_MOCK=False
+OPENAI_API_KEY=Our api Keyyyyyy
+
+
+

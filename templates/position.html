@@ -168,19 +168,6 @@
         </span>
    <span class="pos" id="user">کاربر عادی</span>
 
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-    const userBtn = document.getElementById("user");
-
-    if (userBtn) {
-        userBtn.style.cursor = "pointer";
-        userBtn.addEventListener("click", function () {
-            window.location.href = "/user-profile/";  // مسیر ثابت
-        });
-    }
-});
-</script>
-
 
 
       </div>
@@ -221,7 +208,20 @@ document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("company").addEventListener("click", function () {
       window.location.href = "{% url 'company_profile' %}";
   });
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    const userBtn = document.getElementById("user");
+
+    if (userBtn) {
+        userBtn.style.cursor = "pointer";
+        userBtn.addEventListener("click", function () {
+            window.location.href = "/user-profile/";  // مسیر ثابت
+        });
+    }
+});
 </script>
+
 
       </div>
 
