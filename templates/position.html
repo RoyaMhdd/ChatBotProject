@@ -84,7 +84,7 @@
       <div
         class="role-box"
         id="userBox"
-        onclick="window.location.href='{% url 'set_role' %}?role=user',selectRole('user')"
+        onclick="setTimeout(()=>{location.href='{% url 'set_role' %}?role=user'},250),selectRole('user')"
       >
         <span class="icon" id="ulogo"
           ><svg
@@ -194,7 +194,7 @@
       <div
         class="role-box"
         id="companyBox"
-        onclick="window.location.href='{% url 'set_role' %}?role=company',selectRole('company')"
+        onclick="setTimeout(()=>{location.href='{% url 'set_role' %}?role=company'},250),selectRole('company')"
       >
         <span class="icon" id="clogo"
           ><svg
