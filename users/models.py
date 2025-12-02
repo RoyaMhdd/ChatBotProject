@@ -10,8 +10,7 @@ class User(models.Model):
 
     phone_number = models.CharField(max_length=11, unique=True, null=True, blank=True)
 
-    first_name = models.CharField(max_length=50, blank=True)
-    last_name = models.CharField(max_length=50, blank=True)
+    fullName = models.CharField(max_length=50, blank=True)
 
     email = models.EmailField(null=True, blank=True)
     company_name = models.CharField(max_length=100, null=True, blank=True)

@@ -81,7 +81,11 @@
     <div class="container">
       <h2>با چه عنوانی می‌خواهید وارد شوید؟</h2>
 
-      <div class="role-box" onclick="selectRole('user')" id="userBox">
+      <div
+        class="role-box"
+        id="userBox"
+        onclick="window.location.href='{% url 'set_role' %}?role=user',selectRole('user')"
+      >
         <span class="icon" id="ulogo"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
@@ -187,7 +191,11 @@
         </span>
       </div>
 
-      <div class="role-box" onclick="selectRole('company')" id="companyBox">
+      <div
+        class="role-box"
+        id="companyBox"
+        onclick="window.location.href='{% url 'set_role' %}?role=company',selectRole('company')"
+      >
         <span class="icon" id="clogo"
           ><svg
             xmlns="http://www.w3.org/2000/svg"
@@ -267,55 +275,6 @@
           document.getElementById("companyBox").classList.add("selected");
         }
       }
-      function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-          const cookies = document.cookie.split(";");
-          for (let cookie of cookies) {
-            cookie = cookie.trim();
-            if (cookie.substring(0, name.length + 1) === name + "=") {
-              cookieValue = decodeURIComponent(
-                cookie.substring(name.length + 1)
-              );
-              break;
-            }
-          }
-        }
-        return cookieValue;
-      }
-      // function selectRole(role) {
-      //   fetch("/save-role/", {
-      //     method: "POST",
-      //     headers: {
-      //       "Content-Type": "application/json",
-      //       "X-CSRFToken": getCookie("csrftoken"),
-      //     },
-      //     body: JSON.stringify({ role: role }),
-      //   })
-      //     .then((res) => res.json())
-      //     .then((data) => {
-      //       console.log("Saved:", data);
-      //       highlightSelection(role);
-      //     });
-      // }
-      document.getElementById("company").addEventListener("click", function () {
-        setTimeout(() => {
-          window.location.href = "{% url 'company_profile' %}";
-        }, 250);
-      });
-
-      document.addEventListener("DOMContentLoaded", function () {
-        const userBtn = document.getElementById("user");
-
-        if (userBtn) {
-          userBtn.style.cursor = "pointer";
-          userBtn.addEventListener("click", function () {
-            setTimeout(() => {
-              window.location.href = "/user-profile/";
-            }, 250); // مسیر ثابت
-          });
-        }
-      });
     </script>
   </body>
 </html>

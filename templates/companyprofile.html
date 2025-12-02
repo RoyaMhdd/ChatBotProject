@@ -106,6 +106,7 @@
       </div>
 
       <!-- 🔹 ورودی‌ها -->
+<<<<<<< HEAD
       <form method="POST" action="{% url 'dashboard_main' %}">
         {% csrf_token %}
         <input
@@ -117,6 +118,18 @@
         <input id="email" class="input-box" placeholder="ایمیل کاری" />
         <button id="submitBtn">
           <!-- onclick="window.location.href='{% url 'dashboard_main' %}'" -->
+=======
+      <form method="post" action="{% url 'save_company_profile' %}">
+        {% csrf_token %}
+        <input name="fullname" id="fullname" class="input-box" placeholder="نام و نام خانوادگی" />
+        <input name="company" id="company" class="input-box" placeholder="نام شرکت" />
+        <input name="email" id="email" class="input-box" placeholder="ایمیل کاری" />
+
+        <button id="submitBtn" type="submit">ساخت پروفایل</button>
+      </form>
+
+
+>>>>>>> bd2c2a92bb8ba9e111fcbf46a44586414b490d2b
 
           ساخت پروفایل
         </button>

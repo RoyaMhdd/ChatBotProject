@@ -107,9 +107,11 @@
             />
           </defs>
         </svg>
-        <p>نام و نام خانوادگی</p>
-        <p>نام شرکت</p>
-        <p>ایمیل</p>
+        <p>{{ user.fullName|default:"نام و نام خانوادگی" }}</p>
+        {% if user.role == 'admin' %}
+        <p>{{ user.company_name|default:"نام شرکت" }}</p>
+        {% endif %}
+        <p>{{ user.email|default:"ایمیل" }}</p>
       </div>
 
       <div class="links">

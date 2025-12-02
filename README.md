@@ -60,6 +60,52 @@ You can open the project in PyCharm and set the interpreter to use the .venv fol
 
 ---
 
+### 🧠 AI System Prompts Configuration
+
+This project uses external system prompt files to control the behavior of the AI assistant.
+These prompts are not stored in the repository by design and must be created locally on each environment (developer machine or server).
+
+1️⃣ Create the prompts/ directory
+
+At the project root (the same level as manage.py), create a folder named:
+
+prompts/
+
+
+Your project structure should look like:
+
+ChatBotProject/
+├─ manage.py
+├─ app/
+├─ prompts/
+│  ├─ process.txt
+│  ├─ product.txt
+│  ├─ hybrid.txt
+
+
+Note: prompts/ is intentionally included in .gitignore so prompt contents are never pushed to the repository.
+
+2️⃣ Create prompt files for each invention type
+
+Inside the prompts/ directory, create three UTF-8 text files:
+
+prompts/
+  process.txt
+  product.txt
+  hybrid.txt
+
+
+Each file must contain the full system-level instructions for the AI agent associated with its invention type:
+
+process.txt → System prompt for Process inventions
+
+product.txt → System prompt for Product inventions
+
+hybrid.txt → System prompt for Hybrid (Process + Product) inventions
+
+These system prompts are dynamically loaded by the backend for each chat request and determine the AI behavior accordingly.
+
+
 ### 🧠 Notes
 
 Always activate your virtual environment before running commands.
