@@ -108,17 +108,26 @@
       <!-- 🔹 ورودی‌ها -->
       <form method="post" action="{% url 'save_company_profile' %}">
         {% csrf_token %}
-        <input name="fullname" id="fullname" class="input-box" placeholder="نام و نام خانوادگی" />
-        <input name="company" id="company" class="input-box" placeholder="نام شرکت" />
-        <input name="email" id="email" class="input-box" placeholder="ایمیل کاری" />
+        <input
+          name="fullname"
+          id="fullname"
+          class="input-box"
+          placeholder="نام و نام خانوادگی"
+        />
+        <input
+          name="company"
+          id="company"
+          class="input-box"
+          placeholder="نام شرکت"
+        />
+        <input
+          name="email"
+          id="email"
+          class="input-box"
+          placeholder="ایمیل کاری"
+        />
 
         <button id="submitBtn" type="submit">ساخت پروفایل</button>
-      </form>
-
-
-
-          ساخت پروفایل
-        </button>
       </form>
     </div>
   </body>
