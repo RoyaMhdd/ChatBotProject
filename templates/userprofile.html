@@ -39,11 +39,14 @@
       </div>
 
       <!-- فیلدها -->
-      <input type="text" placeholder="نام و نام خانوادگی" class="input" />
-      <input type="email" placeholder="ایمیل" class="input" />
+      <form method="post" action="{% url 'save_user_profile' %}">
+        {% csrf_token %}
+        <input name="fullname" type="text" placeholder="نام و نام خانوادگی" class="input" />
+        <input name="email" type="email" placeholder="ایمیل" class="input" />
 
-      <!-- دکمه -->
-      <button class="btn" onclick="window.location.href='{% url 'dashboard_main' %}'">ساخت پروفایل</button>
+        <!-- دکمه -->
+        <button class="btn" type="submit">ساخت پروفایل</button>
+      </form>
 
 
       <style>

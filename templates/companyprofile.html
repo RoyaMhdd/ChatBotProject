@@ -107,12 +107,14 @@
       </div>
 
       <!-- 🔹 ورودی‌ها -->
-      <input id="fullname" class="input-box" placeholder="نام و نام خانوادگی" />
-      <input id="company" class="input-box" placeholder="نام شرکت" />
-      <input id="email" class="input-box" placeholder="ایمیل کاری" />
+      <form method="post" action="{% url 'save_company_profile' %}">
+        {% csrf_token %}
+        <input name="fullname" id="fullname" class="input-box" placeholder="نام و نام خانوادگی" />
+        <input name="company" id="company" class="input-box" placeholder="نام شرکت" />
+        <input name="email" id="email" class="input-box" placeholder="ایمیل کاری" />
 
-
-<button id="submitBtn" onclick="window.location.href='{% url 'dashboard_main' %}'">ساخت پروفایل</button>
+        <button id="submitBtn" type="submit">ساخت پروفایل</button>
+      </form>
 
 
 

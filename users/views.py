@@ -150,37 +150,104 @@ def verify_otp(request):
 
     request.session["auth_token"] = token
     request.session.set_expiry(timedelta(days=7))
+    # If first-time login (profile not completed) redirect to position selection
+    if not user.is_profile_completed:
+        return redirect('position')
 
     return redirect("dashboard")
 
 # views.py
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_http_methods
+
 
 @login_required
-def dashboard_redirect(request):
-    # نمایش تمپلیت position.html قبل از داشبورد
+def position(request):
     return render(request, 'position.html')
 
+
 @login_required
-def dashboard_redirect(request):
-    # ا position.html
-    return render(request, 'position.html')
+def set_role(request):
+    # Accept role via GET param for simplicity, set on user and redirect to proper profile page
+    role = request.GET.get('role')
+    if not role or role not in ('user', 'company'):
+        return redirect('position')
+
+    # attach role to current user
+    user = request.user
+    user.role = 'admin' if role == 'company' else 'normal'
+    user.save()
+
+    if role == 'company':
+        return redirect('company_profile')
+    return redirect('user_profile')
+
 
 @login_required
 def company_profile(request):
     return render(request, "companyprofile.html")
 
+
+@login_required
+def save_company_profile(request):
+    if request.method != 'POST':
+        return redirect('company_profile')
+
+    user = request.user
+    fullname = request.POST.get('fullname', '').strip()
+    company = request.POST.get('company', '').strip()
+    email = request.POST.get('email', '').strip()
+
+    if fullname:
+        user.fullName = fullname
+    if company:
+        user.company_name = company
+    if email:
+        user.email = email
+
+    user.is_profile_completed = True
+    # ensure admin role
+    if not user.role:
+        user.role = 'admin'
+    user.save()
+
+    return redirect('dashboard')
+
+
 @login_required
 def user_profile(request):
     return render(request, "userprofile.html")
+
+
+@login_required
+def save_user_profile(request):
+    if request.method != 'POST':
+        return redirect('user_profile')
+
+    user = request.user
+    fullname = request.POST.get('fullname', '').strip()
+    email = request.POST.get('email', '').strip()
+
+    if fullname:
+        user.fullName = fullname
+    if email:
+        user.email = email
+
+    user.is_profile_completed = True
+    if not user.role:
+        user.role = 'normal'
+    user.save()
+
+    return redirect('dashboard')
+
 
 @login_required
 def main_page(request):
     return render(request, "main-page.html")
 
+
 @login_required
 def dashboard(request):
-
     return render(request, 'main-page.html', {"user": request.user})
 
 def new_chat(request):
