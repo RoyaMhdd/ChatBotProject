@@ -13,7 +13,7 @@ def ask_openai(messages):
         client = OpenAI(api_key=settings.OPENAI_API_KEY)
 
         response = client.chat.completions.create(
-            model="gpt-4o-mini",
+            model="gpt-4.1-mini",
             messages=messages,
             temperature=0.7,
             max_tokens=2000
