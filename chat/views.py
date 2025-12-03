@@ -120,29 +120,35 @@ class ChatAPIView(APIView):
             
             logger.info(f"Processing message for user: {user}")
 
-            # Get existing conversation or create new one
-            if conversation_id:
-                try:
-                    if user:
-                        conversation = Conversation.objects.get(
-                            id=conversation_id,
-                            user=user
-                        )
-                    else:
-                        conversation = Conversation.objects.get(id=conversation_id)
-                except Conversation.DoesNotExist:
-                    logger.error(f"Conversation {conversation_id} not found")
-                    return Response(
-                        {"error": "مکالمه یافت نشد."},
-                        status=status.HTTP_404_NOT_FOUND
-                    )
-            else:
-                # Create new conversation
-                conversation = Conversation.objects.create(
-                    user=user,
-                    title=user_message[:50]
+            # Require an existing conversation (created during options step)
+            if not conversation_id:
+                logger.warning("No conversation_id provided in request")
+                return Response(
+                    {"error": "conversation_id is required. Please create a conversation first."},
+                    status=status.HTTP_400_BAD_REQUEST
                 )
-                logger.info(f"Created new conversation: {conversation.id}")
+
+            try:
+                if user:
+                    conversation = Conversation.objects.get(id=conversation_id, user=user)
+                else:
+                    conversation = Conversation.objects.get(id=conversation_id)
+            except Conversation.DoesNotExist:
+                logger.error(f"Conversation {conversation_id} not found")
+                return Response(
+                    {"error": "مکالمه یافت نشد."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            # If this is the first user message for this conversation, update the title
+            has_user_messages = conversation.messages.filter(role=Message.ROLE_USER).exists()
+            if not has_user_messages:
+                # set a concise title based on the user's first message
+                new_title = (user_message[:50]).strip()
+                if new_title:
+                    conversation.title = new_title
+                    conversation.save(update_fields=['title', 'updated_at'])
+                    logger.info(f"Updated conversation title to: {conversation.title}")
 
             # Save user message to database
             user_msg = Message.objects.create(
@@ -256,12 +262,27 @@ class NewChatAPIView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        chat_type = request.data.get("chat_type", "")
+        # Read requested chat type and normalize to model choices
+        raw_type = (request.data.get("chat_type") or "").strip().lower()
         user = request.user if hasattr(request.user, "id") and request.user.id else None
 
-        conversation = Conversation.objects.create(user=user, title="چت جدید")
+        # Map frontend values to model choices. Frontend may send 'both' for hybrid.
+        if raw_type == "both":
+            invention_type = "hybrid"
+        elif raw_type in {"process", "product", "hybrid"}:
+            invention_type = raw_type or "process"
+        else:
+            # default to 'process' when not provided or unrecognized
+            invention_type = "process"
 
-        template_text = "نوع چت مورد نظر را انتخاب کنید."
+        # Create conversation with selected invention_type
+        conversation = Conversation.objects.create(
+            user=user,
+            invention_type=invention_type,
+            title="چت جدید"
+        )
+
+        template_text = f"نوع چت ثبت شد: {invention_type}. شما می‌توانید ادامه دهید."
 
         ai_msg = Message.objects.create(
             conversation=conversation,
@@ -271,9 +292,10 @@ class NewChatAPIView(APIView):
 
         return Response({
             "conversation_id": conversation.id,
+            "invention_type": invention_type,
             "template_message": template_text,
             "ai_message_id": ai_msg.id,
-        }, status=200)
+        }, status=status.HTTP_201_CREATED)
     
 def chat_view(request, pk):
         conversation = get_object_or_404(Conversation, id=pk)

@@ -446,7 +446,7 @@
           const USE_MOCK = false; // حتماً false باشد تا سرور واقعی صدا زده شود
 
           try {
-            const response = await fetch("/api/chat/", {
+            const response = await fetch("{% url 'chat_api' %}", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
@@ -454,7 +454,7 @@
               },
               body: JSON.stringify({
                 message: message,
-                conversation_id: window.currentConversationId || null,
+                conversation_id: {{ conversation.id }},
               }),
             });
 
