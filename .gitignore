@@ -24,3 +24,4 @@ db.sqlite3
 .idea/
 prompts/
 
+users/__pycache__/views.cpython-313.pyc

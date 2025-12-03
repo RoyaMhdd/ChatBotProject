@@ -13,6 +13,8 @@ import requests
 # API KEY کاوه نگار
 KAVENEGAR_API_KEY = "476C4D54596B6744474A4A314A72746634424774556D373174337430317A392F34685054774543783759493D"
 
+def MainPage(request):
+    return render(request, 'main-page.html')
 
 # ------------------  صفحه اصلی  ------------------
 
