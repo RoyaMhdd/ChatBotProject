@@ -8,7 +8,7 @@
   </head>
   <body>
     <div class="chat-container">
-      <header class="chat-header" id="sidebar">
+      <header class="chat-header" id="header">
         <button class="menu-icon" id="menuToggle" onclick="toggleSidebar()">
           ☰
         </button>
@@ -31,7 +31,6 @@
           height: 100vh;
         }
         .chat-header {
-          direction: ltr;
           border-bottom-left-radius: 45px;
           border-bottom-right-radius: 45px;
           background: #0b1d36;
@@ -41,7 +40,8 @@
           justify-content: space-between;
           height: 106px;
           padding: 0 20px;
-          transition: all 0.4s ease;
+          transition: width 0.3s ease;
+          margin-right: 0;
         }
         .site-logo {
           font-size: 23px;
@@ -69,20 +69,20 @@
         .sidebar {
           position: fixed;
           display: block;
-          left: 0;
+          /* left: 0; */
           top: 0;
-
+          right: -200px;
           width: 10%;
           height: 100vh;
           color: black;
           transition: 0.3s ease;
           overflow-y: auto;
 
-          transform: translateX(-100%);
+          /* transform: translateX(100%); */
         }
 
         .sidebar.sidebar-open {
-          transform: translateX(0);
+          right: -40px;
         }
         .sidebar-title {
           border-bottom-left-radius: 45px;
@@ -110,8 +110,7 @@
         }
 
         .chat-header.header-shrink {
-          width: 90%;
-          border-bottom-left-radius: 0;
+          margin-right: 100px;
         }
         #uploadfile {
           display: none;
@@ -241,6 +240,7 @@
         padding: 26px;
         background-color: #d9d9d9;
         width: 25%;
+        overflow-wrap: break-word;
 
         border-radius: 30px;
       }
@@ -454,7 +454,7 @@
               },
               body: JSON.stringify({
                 message: message,
-                conversation_id: {{ conversation.id }},
+                conversation_id: "{{ conversation.id|difault:'' }}",
               }),
             });
 

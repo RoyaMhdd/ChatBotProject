@@ -375,11 +375,16 @@
       }
       /*help section*/
       .guid {
-        display: block;
+        display: flex;
+        flex-direction: column;
         text-align: center;
+        justify-content: center;
 
+        margin-top: 100px;
         height: 500px;
-        padding: 0 60px;
+        width: 70%;
+        margin-right: 20%;
+        margin-bottom: 100px;
       }
       .guid h1 {
         margin-top: 100px;
@@ -401,7 +406,7 @@
         margin: 25px 0;
       }
       .card {
-        width: 300px;
+        width: 250px;
         height: 250px;
         background: #fff;
         border-radius: 15px;
@@ -409,17 +414,20 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         position: relative;
       }
+      .card h1 {
+        font-size: 25px;
+      }
 
       .middle {
-        width: 86%;
+        width: 94%;
       }
       .middle1 {
-        width: 99%;
+        width: 110%;
         text-align: center;
       }
       .middle1 h1 {
         margin-right: 20px;
-        margin-top: 150px;
+        margin-top: 130px;
         margin-bottom: 0;
         margin-left: 10px;
       }
@@ -427,7 +435,7 @@
         bottom: 60% !important;
       }
       .middle h1 {
-        margin-top: 150px;
+        margin-top: 130px;
       }
       .middlesvg {
         left: 40% !important;
@@ -435,8 +443,8 @@
         bottom: 70% !important;
       }
       .card svg {
-        height: 130px;
-        width: 130px;
+        height: 100px;
+        width: 100px;
         position: absolute;
         bottom: 70%;
         left: 40%;
@@ -457,16 +465,16 @@
         text-align: center;
       }
       .one {
-        width: 112%;
+        width: 90%;
       }
       .one h1 {
         margin-top: 130px;
       }
       .two {
-        width: 95%;
+        width: 80%;
       }
       .two h1 {
-        margin-top: 130px;
+        margin-top: 110px;
         margin-bottom: 0;
       }
       .firstone h1 {
@@ -984,7 +992,176 @@
         </div>
       </div>
     </section>
-    <div></div>
+    <section class="benefits">
+      <style>
+        .benefits {
+          height: 700px;
+        }
+      </style>
+    </section>
+    <section class="feedback-section">
+      <div class="titles">
+        <h1 class="title">بازخورد شما</h1>
+        <h3 class="subtitle">برای ما ارزشمند است</h3>
+      </div>
+      <style>
+        .feedback-section {
+          direction: rtl;
+
+          font-family: sans-serif;
+          display: flex;
+          justify-content: center;
+          gap: 100px;
+        }
+        .titles {
+          text-align: center;
+
+          flex: 1;
+        }
+
+        .title {
+          color: #1ca9ba;
+          font-size: 100px;
+          margin-bottom: 0;
+        }
+
+        .subtitle {
+          margin-top: 0;
+          font-size: 50px;
+        }
+
+        .rating-box {
+          flex: 1;
+          display: flex;
+          flex-direction: column;
+
+          gap: 10px;
+          margin: 20px 0;
+        }
+
+        .rate {
+          width: 50px;
+          height: 50px;
+          border: 2px solid #1ca9ba;
+          border-radius: 50%;
+          text-align: center;
+          line-height: 50px;
+          cursor: pointer;
+          transition: 0.3s;
+        }
+        .rates {
+          display: flex;
+          gap: 10px;
+          margin: 20px 0;
+          padding-right: 90px;
+        }
+
+        .rate.active {
+          background-color: #1ca9ba;
+          color: white;
+        }
+
+        textarea {
+          width: 70%;
+          height: 150px;
+          border-radius: 12px;
+          border: 2px solid #1ca9ba;
+          padding: 15px;
+          font-size: 16px;
+          resize: none;
+          outline: none;
+          margin-bottom: 30px;
+        }
+
+        /* کارت‌ها */
+        .cards-container {
+          display: flex;
+          gap: 20px;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .feedback-card {
+          width: 350px;
+          background: #0f213f;
+          padding: 10px 30px;
+          border-radius: 22px;
+          color: white;
+          position: relative;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+          animation: slideLeft 0.6s ease forwards;
+        }
+
+        .rate-badge {
+          width: 55px;
+          height: 55px;
+          background: #dce9f5;
+          color: #0f213f;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 20px;
+          font-weight: 700;
+          position: absolute;
+          right: 80%;
+        }
+        h2 {
+          margin-top: 10px;
+          font-size: 24px;
+          font-weight: 700;
+        }
+
+        h3 {
+          font-size: 17px;
+          margin-top: 6px;
+          opacity: 0.95;
+          font-weight: 400;
+        }
+        .des {
+          background: #112a4d;
+          padding: 18px 22px;
+          border-radius: 18px;
+          margin-top: 15px;
+          font-size: 15px;
+          line-height: 1.9;
+          opacity: 0.95;
+          box-shadow: inset 12px 15px 12px rgba(0, 0, 0, 0.25);
+          border: 1px solid rgb(18, 16, 16);
+        }
+
+        @keyframes slideLeft {
+          from {
+            transform: translateX(150px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+      </style>
+
+      <!-- امتیازدهی -->
+      <div class="rating-box">
+        <div class="rates">
+          <span class="rate" onclick="selectRate(1)">1</span>
+          <span class="rate" onclick="selectRate(2)">2</span>
+          <span class="rate" onclick="selectRate(3)">3</span>
+          <span class="rate" onclick="selectRate(4)">4</span>
+          <span class="rate" onclick="selectRate(5)">5</span>
+        </div>
+
+        <textarea id="userInput" placeholder="نظرات خود را بنویسید."></textarea>
+      </div>
+
+      <!-- متن ورودی -->
+
+      <!-- لیست کارت‌ها -->
+    </section>
+    <div class="cards-container" id="cardsContainer">
+      <!-- کارت نمونه – هر کارت جدید اینجا اضافه می‌شود -->
+    </div>
     <script>
       function toggleSidebar() {
         document.querySelector(".sidebar").classList.toggle("sidebar-open");
@@ -1013,6 +1190,50 @@
           document.querySelector(".header").classList.remove("header-shrink");
         });
       });
+      //--------feedback-section-------
+      let selectedRate = null;
+
+      function selectRate(num) {
+        selectedRate = num;
+
+        document
+          .querySelectorAll(".rate")
+          .forEach((r) => r.classList.remove("active"));
+        event.target.classList.add("active");
+      }
+
+      const input = document.getElementById("userInput");
+
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") {
+          e.preventDefault(); // جلوگیری از رفتن به خط بعد
+          addCard();
+        }
+      });
+
+      function addCard() {
+        const text = input.value.trim();
+        if (!text || !selectedRate) return;
+
+        // ساخت کارت
+        const card = document.createElement("div");
+        card.className = "feedback-card";
+
+        card.innerHTML = `
+        
+    <div class="rate-badge">${selectedRate}</div>
+    
+    <h2 >یاسمینا حاجی زاده</h2>
+     <h3>مخترع حوزه هوش مصنوعی</h3>
+    <p class="des">${text}</p>
+    
+  `;
+
+        document.getElementById("cardsContainer").prepend(card);
+
+        // پاک کردن textarea
+        input.value = "";
+      }
     </script>
   </body>
 </html>
