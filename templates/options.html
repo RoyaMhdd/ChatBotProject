@@ -4,34 +4,26 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>سوال و گزینه‌ها</title>
+    {% load static %}
     <style>
-      :root {
-        /* فونت‌ها */
-        --font-family: "Vazirmatn", "Tahoma", sans-serif;
-        --title-font-size: 28px; /* از فیگما برای متن سوال */
-        --button-font-size: 18px; /* از فیگما برای متن دکمه‌ها */
-
-        /* دکمه‌ها */
-        --button-height: 56px; /* ارتفاع دکمه */
-
-        /* رنگ‌ها (از فیگما بردار) */
-        --accent-color: #18c7b6; /* رنگ سبز-آبی برای انتخاب */
-
-        --outline-color: #07243a; /* رنگ خط دور دکمه‌ها */
-        --page-border-color: #05223a; /* رنگ حاشیه کلی صفحه */
-      }
-
       * {
         box-sizing: border-box;
       }
+      @font-face {
+        font-family: "Vazirmatn";
+        src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}")
+          format("truetype");
+      }
+
       html,
       body {
         height: 100%;
+        font-family: "Vazirmatn", sans-serif;
       }
       body {
         margin: 0;
         background: #ffffff;
-        font-family: var(--font-family);
+
         color: #0b2540;
 
         display: flex;
@@ -44,12 +36,11 @@
         width: 100%;
         max-width: 1200px;
 
-        padding: 22px; /* فاصله از حاشیه فریم تا محتوا */
+        padding: 22px;
 
         background: linear-gradient(180deg, #fff, #fff);
       }
 
-      /* کانتِینِر مرکزی (مرکز شده و محدود عرض) */
       .center-card {
         width: 100%;
         display: flex;
@@ -113,22 +104,18 @@
 
       .btn.selected {
         background: transparent;
-        border-color: var(--accent-color);
+        border-color: #18c7b6;
         box-shadow: 0 0 0 4px rgba(24, 199, 182, 0.08);
-        color: var(--accent-color);
+        color: #18c7b6;
       }
 
       .btn.selected.fill {
-        background: var(--accent-color);
+        background: #18c7b6;
         color: #fff;
         border-color: transparent;
       }
 
       @media (max-width: 700px) {
-        :root {
-          --button-height: 48px;
-          --title-font-size: 20px;
-        }
         .actions {
           flex-direction: column;
           gap: 12px;

@@ -76,7 +76,17 @@
           </svg>
         </div>
       </header>
+      {% load static %}
       <style>
+        @font-face {
+          font-family: "Vazirmatn";
+          src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}")
+            format("truetype");
+        }
+        html {
+          font-family: "Vazirmatn", sans-serif;
+        }
+
         body,
         html {
           margin: 0;
