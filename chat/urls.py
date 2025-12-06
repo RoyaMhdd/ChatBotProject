@@ -5,6 +5,7 @@ from .views import (
     chat_view,
     ChatHistoryAPIView,
     ChatAPIView,
+    ConversationMessagesAPIView,
 )
 
 urlpatterns = [
@@ -22,5 +23,8 @@ urlpatterns = [
 
     # Chat history (optional)
     path('api/history/', ChatHistoryAPIView.as_view(), name='chat_history'),
+
+    # Get previous messages for a specific conversation
+    path('api/messages/<int:conversation_id>/', ConversationMessagesAPIView.as_view(), name='conversation_messages'),
 ]
 

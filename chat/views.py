@@ -297,6 +297,48 @@ class NewChatAPIView(APIView):
             "ai_message_id": ai_msg.id,
         }, status=status.HTTP_201_CREATED)
     
+class ConversationMessagesAPIView(APIView):
+    """Retrieve all previous messages for a specific conversation"""
+    permission_classes = [AllowAny]
+
+    def get(self, request, conversation_id):
+        try:
+            user = request.user if hasattr(request.user, 'id') and request.user.id else None
+            
+            # Get the conversation
+            if user:
+                conversation = Conversation.objects.get(id=conversation_id, user=user)
+            else:
+                conversation = Conversation.objects.get(id=conversation_id)
+            
+            logger.info(f"Fetching messages for conversation {conversation_id}")
+            
+            # Get all messages ordered by creation time
+            messages = conversation.messages.all().order_by('created_at').values(
+                'id', 'role', 'content', 'created_at'
+            )
+            
+            return Response({
+                "conversation_id": conversation.id,
+                "conversation_title": conversation.title,
+                "invention_type": conversation.invention_type,
+                "messages": list(messages)
+            }, status=status.HTTP_200_OK)
+        
+        except Conversation.DoesNotExist:
+            logger.error(f"Conversation {conversation_id} not found")
+            return Response(
+                {"error": "مکالمه یافت نشد."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        except Exception as e:
+            logger.error(f"Conversation Messages API Error: {str(e)}", exc_info=True)
+            return Response(
+                {"error": f"خطای سرور: {str(e)}"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
+
 def chat_view(request, pk):
         conversation = get_object_or_404(Conversation, id=pk)
         return render(request, 'chatbar.html', {'conversation': conversation})
