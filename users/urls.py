@@ -1,5 +1,7 @@
 from django.urls import path
 from . import views
+from .views import go_new_chat
+
 
 urlpatterns = [
     path('',views.MainPage,name='MainPage'),
@@ -17,6 +19,10 @@ urlpatterns = [
     path('user-profile/main-page/', views.main_page, name='dashboard_main'),
     path('dashboard/main/', views.dashboard, name='dashboard_main'),
     path('new-chat/', views.new_chat, name='new_chat'),
-    path("logout/", views.logout_view, name="logout")
+    path("gotochat/", go_new_chat, name="gotochat"),
+    path("logout/", views.logout_view, name="logout"),
+    path("clearsession/", views.clear_session, name="clearsession"),
+
 
 ]
+
