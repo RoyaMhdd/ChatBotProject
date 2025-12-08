@@ -8,6 +8,7 @@ from users.decorator import login_required
 from .models import User, OTP
 import secrets
 import requests
+from django.contrib.auth import login
 
 
 # API KEY کاوه نگار
@@ -19,6 +20,7 @@ def MainPage(request):
 # ------------------  صفحه اصلی  ------------------
 
 def Home(request):
+
     return render(request, 'home.html')
 
 
@@ -145,13 +147,18 @@ def verify_otp(request):
         return JsonResponse({"error": "OTP expired"}, status=400)
 
     otp.delete()
-    
+
+    # بررسی شماره قبل از صدور توکن
+    if not user.phone_number or user.phone_number.strip() == "":
+        return redirect("/home")
+
+    # ساخت توکن
     token = secrets.token_hex(32)
     user.token = token
     user.save()
-
     request.session["auth_token"] = token
     request.session.set_expiry(timedelta(days=7))
+
     # If first-time login (profile not completed) redirect to position selection
     if not user.is_profile_completed:
         return redirect('position')
@@ -263,3 +270,90 @@ def logout_view(request):
 
     request.session.flush()
     return redirect("home")
+
+
+# def go_new_chat(request):
+    # token = request.session.get("auth_token")
+    #
+    # if not token:
+    #     return redirect("/home")
+    #
+    # try:
+    #     user = User.objects.get(token=token)
+    # except User.DoesNotExist:
+    #     return redirect("/home")
+    #
+    # return redirect("/chat/options")
+
+
+from django.shortcuts import redirect
+from django.http import HttpRequest
+
+from django.shortcuts import redirect
+from django.http import HttpRequest
+from .models import User
+
+# def go_new_chat(request: HttpRequest):
+#     token = request.session.get("auth_token")
+#
+#     # اگر لاگین نیست → بفرست login
+#     if not token:
+#         return redirect("/home")
+#
+#     # چک وجود توکن در دیتابیس
+#     try:
+#         user = User.objects.get(token=token)
+#     except User.DoesNotExist:
+#         return redirect("/home")
+#
+#     # چک فعال بودن حساب
+#     if not user.is_active:
+#         return redirect("/home")
+
+    # اگر لاگین کرده → بفرست به صفحه options
+    # return redirect("/chat/options/")
+
+from django.shortcuts import redirect
+from django.http import HttpRequest
+from .models import User
+import logging
+
+logger = logging.getLogger(__name__)
+from django.shortcuts import redirect
+from django.http import HttpRequest
+from .models import User
+import logging
+
+logger = logging.getLogger(__name__)
+
+def clear_session(request):
+    request.session.flush()
+    return redirect("/home")
+
+
+def go_new_chat(request: HttpRequest):
+    token = request.session.get("auth_token")
+
+    # اگر توکن وجود نداشت → پاک کن session و برو home
+    if not token:
+        request.session.pop("auth_token", None)
+        return redirect("/home")
+
+    try:
+        user = User.objects.get(token=token)
+    except User.DoesNotExist:
+        request.session.pop("auth_token", None)
+        return redirect("/home")
+
+    # اگر شماره موبایل کاربر خالی بود → پاک کن session و برو home
+    if not user.phone_number or user.phone_number.strip() == "":
+        request.session.pop("auth_token", None)
+        return redirect("/home")
+
+    # اگر حساب غیرفعال بود → پاک کن session و برو home
+    if not user.is_active:
+        request.session.pop("auth_token", None)
+        return redirect("/home")
+
+    # همه چیز درست بود → برو chat options
+    return redirect("/chat/options/")
