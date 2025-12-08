@@ -169,7 +169,7 @@
           <a href="{% url 'options' %}">گفتوگو جدید</a>
           <a href="{% url 'options' %}">تاریخچه</a>
           <a href="{% url 'options' %}">خرید اشتراک</a>
-          <a href="{% url 'options' %}">خانه</a>
+          <a href="{% url 'home' %}">خانه</a>
         </div>
       </aside>
       <style>
@@ -239,7 +239,7 @@
       <div class="chat-main" id="chatWindow">
         <div id="user-chat">
           <div class="chat-bubble bot">
-            سلام ،روزت بخیر <br />من آماده‌ام تا درباره اختراعت بشنوم
+            !سلام ،روزت بخیر <br />من آماده‌ام تا درباره اختراعت بشنوم
           </div>
         </div>
       </div>
@@ -459,12 +459,15 @@
       .chat-button {
         width: 40px;
         height: 40px;
-        border: none;
+        border: 1px solid #0a2342;
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
-        background-color: inherit;
+        background-color: #a3c7ec;
+        border-radius: 50px;
+        margin-top: 5px;
+        margin-right: 4px;
       }
       .chat-form-btn {
         margin-right: 4px;

@@ -52,8 +52,16 @@
         <!-- دکمه -->
         <button class="btn" type="submit">ساخت پروفایل</button>
       </form>
-
+       {% load static %}
       <style>
+          @font-face {
+          font-family: "Vazirmatn";
+          src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}")
+            format("truetype");
+        }
+        html {
+          font-family: "Vazirmatn", sans-serif;
+        }
         body {
           margin: 0;
           padding: 0;

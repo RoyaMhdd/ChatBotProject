@@ -8,8 +8,10 @@
   <body>
     <header class="header">
       <div class="prt1">
-        <a href="{% url 'home' %}">ورود/عضویت</a>
-        <a href="{% url 'options' %}">گفتوگوی جدید</a>
+        <a href="{% url 'home' %}">
+          سلام {{ user.fullName|default:"ورود/عضویت" }}</a
+        >
+        <a href="{% url 'options' %}">خانه</a>
         <a href="">خرید اشتراک</a>
       </div>
       <div class="svg-header">
@@ -159,7 +161,7 @@
         <h1 class="patra">
           جایی که نیاز های شما و توانایی ما همدیگر را ملاقات می کنند
         </h1>
-        <a href="" class="new-chat">گفتو گوی جدید</a>
+        <a href="{% url 'options' %}" class="new-chat">گفتو گوی جدید</a>
       </div>
     </section>
     <aside class="sidebar">
@@ -1175,14 +1177,14 @@
           font-weight: 400;
         }
         .des {
-          background: #112a4d;
+          background: linear-gradient(140deg, #284968 5%, #2b2d42 68%);
           padding: 18px 22px;
           border-radius: 18px;
           margin-top: 15px;
           font-size: 15px;
           line-height: 1.9;
           opacity: 0.95;
-          box-shadow: inset 12px 15px 12px rgba(0, 0, 0, 0.25);
+
           border: 1px solid rgb(18, 16, 16);
         }
 

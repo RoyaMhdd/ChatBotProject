@@ -4,8 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ساخت پروفایل</title>
-
+    {% load static %}
     <style>
+      @font-face {
+        font-family: "Vazirmatn";
+        src: url("{% static 'fonts/Vazirmatn-VariableFont_wght.ttf' %}")
+          format("truetype");
+      }
+      html {
+        font-family: "Vazirmatn", sans-serif;
+      }
       :root {
         --primary: #3a5f8f;
         --border: #6b8bb5;
@@ -124,6 +132,7 @@
           id="email"
           class="input-box"
           placeholder="ایمیل کاری"
+          type="email"
         />
 
         <button id="submitBtn" type="submit">ساخت پروفایل</button>

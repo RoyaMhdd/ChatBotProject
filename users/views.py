@@ -121,7 +121,9 @@ def verify_otp(request):
     d4 = request.POST.get("digit4")
 
     if not (phone_number and d1 and d2 and d3 and d4):
-        return JsonResponse({"error": "Invalid data"}, status=400)
+        error="کد نامعتبر می باشد"
+        return render(request, "code.html", {"error": error})
+
 
     #  تبدیل درست RTL → LTR
     code = f"{d1}{d2}{d3}{d4}"[::-1]
@@ -136,15 +138,16 @@ def verify_otp(request):
     print("LAST OTP:", otp)
 
     if not otp:
-        return JsonResponse({"error": "No OTP found"}, status=404)
+        error = "کد یافت نشد"
+        return render(request, "code.html", {"error": error})
 
     if otp.code != code:
-        print("WRONG CODE")
-        return JsonResponse({"error": "Invalid OTP"}, status=400)
+        error = "کد معتبر نمی باشد"
+        return render(request, "code.html", {"error": error})
 
     if not otp.is_valid():
-        otp.delete()
-        return JsonResponse({"error": "OTP expired"}, status=400)
+        error = "کد منقضی شده"
+        return render(request, "code.html", {"error": error})
 
     otp.delete()
 
