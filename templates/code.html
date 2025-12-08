@@ -209,9 +209,29 @@
             }
             .btn-resend {
               border: 0;
-              background-color: #8fb3d8;
-              color: #4e7bac;
+              background-color: #b5cee9;
+              color: #0a2342;
               font-size: 20px;
+              border-radius: 23px;
+              width: 200px;
+              height: 74px;
+              margin: 0 10px;
+              cursor: pointer;
+              box-shadow: 0 2px 8px rgba(46, 196, 182, 0.12);
+              transition: background 0.2s, color 0.2s, opacity 0.2s, box-shadow 0.2s;
+              opacity: 1;
+            }
+            .btn-resend:disabled {
+              background-color: #e0e0e0;
+              color: #a0a0a0;
+              cursor: not-allowed;
+              opacity: 0.6;
+              box-shadow: none;
+            }
+            .btn-resend:not(:disabled):hover {
+              background-color: #0a2342;
+              color: #fff;
+              box-shadow: 0 4px 16px rgba(46, 196, 182, 0.18);
             }
             .btn-confirm {
               color: #0a2342;
@@ -320,7 +340,7 @@
             تایید
           </button>
           <button type="button" class="btn btn-resend" id="resend-btn" disabled>
-            ارسال مجدد کد 60 ثانیه
+            ارسال مجدد کد <span id="resend-timer">60</span> ثانیه
           </button>
 
           {%if error%}
@@ -335,40 +355,95 @@
     </div>
 
     <script>
+      // Error animation for wrong number
       document.querySelectorAll(".wrongnumber").forEach((box) => {
         const progress = box.querySelector(".error-progress");
-
         progress.addEventListener("animationend", () => {
           box.style.transition = "opacity 0.4s";
           box.style.opacity = "0";
-
           setTimeout(() => {
             box.remove();
           }, 400);
         });
       });
-      const inputs = document.querySelectorAll(".verify-otp-input");
 
+      // OTP input navigation
+      const inputs = document.querySelectorAll(".verify-otp-input");
       inputs.forEach((input, index) => {
         input.addEventListener("input", (e) => {
           let value = e.target.value.replace(/\D/g, "");
           e.target.value = value;
-
           if (value && index < inputs.length - 1) {
             inputs[index + 1].focus();
           }
         });
-
         input.addEventListener("keydown", (e) => {
           if (e.key === "Backspace" && !input.value && index > 0) {
             inputs[index - 1].focus();
           }
         });
-
         input.addEventListener("focus", (e) => {
           setTimeout(() => {
             input.selectionStart = input.selectionEnd = input.value.length;
           }, 0);
+        });
+      });
+
+      // Resend OTP logic
+      const resendBtn = document.getElementById('resend-btn');
+      const resendTimer = document.getElementById('resend-timer');
+      const phoneInput = document.querySelector('input[name="phone_number"]');
+      let timer = 60;
+      let interval = null;
+
+      function startResendTimer() {
+        resendBtn.disabled = true;
+        timer = 60;
+        resendTimer.textContent = timer;
+        interval = setInterval(() => {
+          timer--;
+          resendTimer.textContent = timer;
+          if (timer <= 0) {
+            clearInterval(interval);
+            resendBtn.disabled = false;
+            resendTimer.textContent = '';
+            resendBtn.textContent = 'ارسال مجدد کد';
+          }
+        }, 1000);
+      }
+
+      startResendTimer();
+
+      resendBtn.addEventListener('click', function() {
+        if (resendBtn.disabled) return;
+        resendBtn.disabled = true;
+        resendBtn.textContent = 'در حال ارسال...';
+        // Send OTP via POST
+        fetch('/send-otp', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRFToken': (document.querySelector('input[name="csrfmiddlewaretoken"]')||{}).value || ''
+          },
+          body: `phone_number=${encodeURIComponent(phoneInput.value)}`
+        })
+        .then(resp => {
+          if (resp.redirected) {
+            window.location.href = resp.url;
+            return;
+          }
+          return resp.json();
+        })
+        .then(data => {
+          // If not redirected, show error if any
+          if (data && data.error) {
+            alert(data.error);
+          }
+          startResendTimer();
+        })
+        .catch(() => {
+          alert('خطا در ارسال مجدد کد');
+          startResendTimer();
         });
       });
     </script>
