@@ -159,8 +159,7 @@
         <h1 class="patra">
           جایی که نیاز های شما و توانایی ما همدیگر را ملاقات می کنند
         </h1>
-        <a href="{% url 'gotochat' %}" class="new-chat">گفتو گوی جدید</a>
-
+        <a href="" class="new-chat">گفتو گوی جدید</a>
       </div>
     </section>
     <aside class="sidebar">
@@ -218,10 +217,17 @@
         margin: 0;
         padding: 0;
 
-        background-color: #f5f5f5;
+        background-color: #f7f9fb;
       }
       .first_section {
-        background: rgba(78, 123, 172, 0.36);
+        background: linear-gradient(
+          180deg,
+          #6493c5 0%,
+
+          #c7e0ff 70%,
+          #f7f9fb
+        );
+
         width: 100%;
         height: 650px;
         display: flex;
@@ -413,7 +419,7 @@
         margin-bottom: 100px;
       }
       .guid h1 {
-        margin-top: 100px;
+        margin-top: 10%;
       }
       .continar {
         direction: ltr;
@@ -620,7 +626,7 @@
       }
     </style>
     <section class="guid">
-      <h1>پترا چگونه به شما کمک میکند؟</h1>
+      <h1>امکانات هوشمند برای نتایج حرفه‌ای</h1>
       <div class="continar">
         <div class="card_row firstone">
           <div class="card">
@@ -933,15 +939,16 @@
           <h3>همراهی قدم‌به‌قدم</h3>
           <p>
             پترا از ایده اولیه تا ارسال نهایی فرم‌ها، همه مراحل را واضح و
-            مرحله‌به‌مرحله راهنمایی می‌کند.
+            مرحله‌به‌مرحله راهنمایی می‌کند
           </p>
         </div>
 
         <div class="ben-card">
           <h3>کاهش خطای انسانی</h3>
           <p>
-            با تولید خودکار اسناد قانونی، احتمال خطاهای نوشتاری یا محتوایی به
-            حداقل می‌رسد.
+            با تولید خودکار اسناد قانونی,<br />
+            احتمال خطاهای نوشتاری یا<br />
+            .محتوایی به حداقل می‌رسد.
           </p>
         </div>
 
@@ -949,7 +956,7 @@
           <h3>کاهش هزینه‌ها</h3>
           <p>
             بدون نیاز به کارشناسان متعدد، اسناد تخصصی را با کمترین هزینه تولید و
-            مدیریت کنید.
+            .مدیریت کنید
           </p>
         </div>
       </div>
@@ -965,9 +972,9 @@
       <style>
         .blur {
           height: 200px;
-          background: rgba(94, 92, 197, 0.25);
-          backdrop-filter: blur(28px);
-          -webkit-backdrop-filter: blur(28px);
+          padding-bottom: 40px;
+          filter: blur(150px);
+          background-color: rgba(78, 123, 172, 0.36);
         }
         .benefits {
           direction: ltr;
@@ -987,7 +994,7 @@
         .ben-card {
           background: #1e3150;
           color: #fff;
-          padding: 40px;
+          padding: 90px 20px;
           border-radius: 30px;
           width: 300px;
           height: 420px;
@@ -995,11 +1002,12 @@
           display: flex;
           flex-direction: column;
           justify-content: flex-start;
+          text-align: center;
         }
 
         .ben-card h3 {
           font-size: 28px;
-          margin-bottom: 25px;
+          margin-top: 90px;
           line-height: 1.5;
         }
 
@@ -1016,9 +1024,18 @@
           width: 350px;
           text-align: right;
         }
+        .comment {
+          height: 40px;
+          width: 120px;
+          margin-right: 58%;
+          border-radius: 30px;
+          border: 2px solid #27a79c;
+          background-color: #2ec4b6;
+          font-size: 15px;
+        }
       </style>
     </section>
-    <div class="blur">d</div>
+
     <section class="feedback-section">
       <div class="titles">
         <h1 class="title">بازخورد شما</h1>
@@ -1033,7 +1050,8 @@
           gap: 40px;
           background: linear-gradient(
             180deg,
-            #eef6ff 0%,
+            #f7f9fb,
+            #eef6ff 12%,
             #dcecff 40%,
             #c7e0ff 100%
           );
@@ -1066,12 +1084,13 @@
         }
 
         .rate {
-          width: 50px;
-          height: 50px;
+          width: 60px;
+          height: 60px;
           border: 3px solid rgb(46, 196, 182);
+          background-color: #cce0f4;
           border-radius: 50%;
           text-align: center;
-          line-height: 50px;
+          line-height: 60px;
           cursor: pointer;
           transition: 0.3s;
         }
@@ -1079,7 +1098,7 @@
           display: flex;
           gap: 23px;
           margin: 20px 0;
-          padding-right: 80px;
+          padding-right: 40px;
         }
 
         .rate.active {
@@ -1190,6 +1209,7 @@
         </div>
 
         <textarea id="userInput" placeholder="نظرات خود را بنویسید."></textarea>
+        <button class="comment" id="send">ثبت نظر</button>
       </div>
 
       <!-- متن ورودی -->
@@ -1389,6 +1409,8 @@
       }
 
       const input = document.getElementById("userInput");
+      const sendbtn = document.getElementById("send");
+      sendbtn.addEventListener("click", addCard);
 
       input.addEventListener("keydown", function (e) {
         if (e.key === "Enter") {
@@ -1421,6 +1443,5 @@
         input.value = "";
       }
     </script>
-
   </body>
 </html>
