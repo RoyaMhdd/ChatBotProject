@@ -93,6 +93,7 @@
           margin: 0;
           padding: 0;
           height: 100vh;
+          word-spacing: -1px;
         }
         * {
           position: relative;
@@ -167,7 +168,7 @@
         </div>
 
         <div class="links">
-          <a href="{% url 'options' %}">گفتوگو جدید</a>
+          <a href="{% url 'options' %}">گفت و گو جدید</a>
           <a href="{% url 'options' %}">تاریخچه</a>
           <a href="{% url 'options' %}">خرید اشتراک</a>
           <a href="{% url 'home' %}">خانه</a>
@@ -229,7 +230,7 @@
         }
 
         .chat-header.header-shrink {
-          margin-right: 200px;
+          margin-right: 210px;
         }
 
         #uploadfile {
@@ -240,7 +241,8 @@
       <div class="chat-main" id="chatWindow">
         <div id="user-chat">
           <div class="chat-bubble bot">
-            سلام ،روزت بخیر !<br />من آماده‌ام تا درباره اختراعت بشنوم
+            سلام، روزت بخیر !<br />
+            من امادم راجع اختراعت بشنوم.<br />
           </div>
         </div>
       </div>
