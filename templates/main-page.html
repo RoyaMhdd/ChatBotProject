@@ -8,9 +8,11 @@
   <body>
     <header class="header">
       <div class="prt1">
-        <a href="{% url 'home' %}">
-          سلام {{ user.fullName|default:"ورود/عضویت" }}</a
-        >
+        {% if request.session.auth_token %}
+        <h1>سلام {{user.fullName}}</h1>
+        {% else %}
+        <a href="{% url 'home' %}"> ورود/عضویت</a>
+        {% endif %}
         <a href="{% url 'options' %}">خانه</a>
         <a href="">خرید اشتراک</a>
       </div>
@@ -162,8 +164,8 @@
         <h1 class="patra">
           جایی که نیاز های شما و توانایی ما همدیگر را ملاقات می کنند
         </h1>
-<!--        <a href="{% url 'options' %}" class="new-chat">گفتو گوی جدید</a>-->
-         <a href="{% url 'gotochat' %}" class="new-chat">گفتو گوی جدید</a>
+        <!--        <a href="{% url 'options' %}" class="new-chat">گفتو گوی جدید</a>-->
+        <a href="{% url 'gotochat' %}" class="new-chat">گفتو گوی جدید</a>
       </div>
     </section>
     <!-- <aside class="sidebar">
@@ -223,6 +225,7 @@
 
         background-color: #f7f9fb;
       }
+
       .first_section {
         background: linear-gradient(
           180deg,
@@ -283,7 +286,11 @@
       .svg-patra {
         padding-bottom: 10px;
       }
-
+      .prt1 h1 {
+        font-size: 15px;
+        color: #f5f5f5;
+        padding-top: 20px;
+      }
       .prt1 a {
         padding: 30px 20px;
         font-size: 16px;
@@ -459,10 +466,10 @@
       }
 
       .middle {
-        width: 95%;
+        width: 97%;
       }
       .middle1 {
-        width: 95%;
+        width: 97%;
         text-align: center;
       }
       .middle1 h1 {
@@ -514,6 +521,18 @@
       }
       .firstone h1 {
         margin-top: 110px;
+      }
+      .one svg {
+        left: 50%;
+        right: 32%;
+      }
+      .one1 {
+        right: 40% !important;
+        left: 30% !important;
+      }
+      .two2 {
+        right: 40% !important;
+        left: 30% !important;
       }
 
       @media (max-width: 768px) {
@@ -645,6 +664,7 @@
               height="163"
               viewBox="0 0 163 163"
               fill="none"
+              class="one1"
             >
               <rect width="163" height="163" fill="url(#pattern0_394_2)" />
               <defs>
@@ -681,6 +701,7 @@
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
+              class="two2"
             >
               <rect width="132" height="132" fill="url(#pattern0_521_7)" />
               <defs>
@@ -1039,6 +1060,7 @@
           border: 2px solid #27a79c;
           background-color: #2ec4b6;
           font-size: 15px;
+          font-family: inherit !important;
         }
       </style>
     </section>
@@ -1073,7 +1095,7 @@
           color: rgb(46, 196, 182);
           font-size: 90px;
           margin-bottom: 0;
-          margin-left: 50px;
+          margin-left: 60px;
         }
 
         .subtitle {
@@ -1124,6 +1146,7 @@
           outline: none;
           margin-bottom: 30px;
           background-color: inherit;
+          font-family: inherit !important;
         }
 
         /* کارت‌ها */
