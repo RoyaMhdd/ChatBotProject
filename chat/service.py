@@ -16,12 +16,15 @@ def ask_openai(messages):
             model="gpt-4o-mini",
             messages=messages,
             temperature=0.7,
-            max_tokens=2000
+            max_tokens=4000
         )
 
+
         reply = response.choices[0].message.content
-        logger.info("OpenAI response successful")
+        finish_reason = response.choices[0].finish_reason
+        logger.info(f"OpenAI response successful, finish reason: {finish_reason}")
         return reply
+
 
     except ImportError:
         logger.error("OpenAI package not installed. Run: pip install openai")
