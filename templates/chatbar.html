@@ -12,6 +12,14 @@
         <button class="menu-icon" id="menuToggle" onclick="toggleSidebar()">
           ☰
         </button>
+        <button onclick="downloadWord({{ conversation.id }})">دانلود Word</button>
+
+<script>
+function downloadWord(conversationId) {
+    window.location.href = `/chat/conversation/${conversationId}/download-word/`;
+}
+</script>
+
         <div class="site-logo">
           <svg
             xmlns="http://www.w3.org/2000/svg"

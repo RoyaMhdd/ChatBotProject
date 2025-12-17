@@ -4,12 +4,13 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import logging
-
 from .service import ask_openai
 from .models import Conversation, Message
-
 import os
 from django.conf import settings
+from .Services.WordExporter import json_to_word
+from django.http import FileResponse, Http404
+import json
 
 
 logger = logging.getLogger(__name__)
@@ -342,3 +343,31 @@ class ConversationMessagesAPIView(APIView):
 def chat_view(request, pk):
         conversation = get_object_or_404(Conversation, id=pk)
         return render(request, 'chatbar.html', {'conversation': conversation})
+
+
+def download_last_ai_word(request, conversation_id):
+    try:
+        # گرفتن مکالمه
+        conversation = Conversation.objects.get(id=conversation_id)
+
+        # آخرین پیام AI
+        last_ai_message = conversation.messages.filter(role='assistant').order_by('-created_at').first()
+        if not last_ai_message:
+            raise Http404("پیام AI یافت نشد.")
+
+        # مسیر فایل Word
+        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
+        word_filename = f"invention_{conversation.id}.docx"
+        word_filepath = os.path.join(settings.MEDIA_ROOT, word_filename)
+
+        # تبدیل JSON به Word
+        json_data = json.loads(last_ai_message.content)
+        json_to_word(json_data, word_filepath)
+
+        # ارسال فایل برای دانلود
+        return FileResponse(open(word_filepath, 'rb'), as_attachment=True, filename=word_filename)
+
+    except Conversation.DoesNotExist:
+        raise Http404("مکالمه یافت نشد.")
+    except Exception as e:
+        raise Http404(f"خطا در ساخت فایل Word: {str(e)}")
