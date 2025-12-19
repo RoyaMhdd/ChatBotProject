@@ -145,7 +145,7 @@ class ChatAPIView(APIView):
             has_user_messages = conversation.messages.filter(role=Message.ROLE_USER).exists()
             if not has_user_messages:
                 # set a concise title based on the user's first message
-                new_title = (user_message[:50]).strip()
+                new_title = (user_message[:10]+"...").strip()
                 if new_title:
                     conversation.title = new_title
                     conversation.save(update_fields=['title', 'updated_at'])
@@ -282,8 +282,7 @@ class NewChatAPIView(APIView):
             invention_type=invention_type,
             title="چت جدید"
         )
-
-        template_text = f"نوع چت ثبت شد: {invention_type}. شما می‌توانید ادامه دهید."
+        template_text = "سلام، روزت بخیر !\nمن آماده‌ام تا درباره‌ی اختراعت بشنوم."
 
         ai_msg = Message.objects.create(
             conversation=conversation,

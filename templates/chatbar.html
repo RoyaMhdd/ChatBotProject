@@ -191,12 +191,10 @@
                   />
                 </div>
                 <div id="items">
-                  <div>پاستا غنی شده</div>
-                  <div>لامپ</div>
-                  <div>تلفن</div>
-                  <div>برق</div>
-                  <div>ماشین</div>
-                  <div>صندلی</div>
+                  <!-- History list rendered here -->
+                  <div id="historyList" class="history-list">
+                    <div class="result-item">در حال بارگذاری...</div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -300,6 +298,42 @@
         .result-item {
           padding: 18px;
           border-bottom: 1px solid #ccc;
+        }
+
+        .history-list {
+          display: flex;
+          flex-direction: column;
+        }
+
+        .history-item {
+          padding: 16px;
+          border-bottom: 1px solid #e6e6e6;
+          cursor: pointer;
+        }
+
+        .history-item:hover {
+          background: #f5f7fb;
+        }
+
+        .history-item.active {
+          background: #eaf2ff;
+          border-left: 4px solid #07243a;
+        }
+
+        .history-title {
+          font-weight: 600;
+          margin-bottom: 6px;
+        }
+
+        .history-preview {
+          font-size: 13px;
+          color: #666;
+        }
+
+        .history-time {
+          font-size: 11px;
+          color: #999;
+          text-align: left;
         }
       </style>
 
@@ -607,6 +641,12 @@
 
         const button=document.getElementById("send")
 
+        // track currently open conversation (start with server-rendered conversation)
+        window.currentConversationId = {{ conversation.id }};
+        const HISTORY_API = "{% url 'chat_history' %}";
+        const MESSAGES_API_TEMPLATE = "{% url 'conversation_messages' 0 %}";
+        window.historyData = [];
+
         function addChatMessage(msg, fromUser = true) {
           const bubble = document.createElement("div");
           bubble.className = "user-massage";
@@ -709,7 +749,7 @@
               },
               body: JSON.stringify({
                 message: message,
-                conversation_id: {{ conversation.id }},
+                conversation_id: window.currentConversationId,
               }),
             });
 
@@ -729,6 +769,89 @@
             addChatReply("⚠️ خطا در اتصال به سرور");
           }
         }
+
+        // Load chat history from server and render in sidebar
+        async function loadHistory() {
+          try {
+            const res = await fetch(HISTORY_API);
+            if (!res.ok) throw new Error("Failed to load history");
+            const data = await res.json();
+            window.historyData = data.conversations || [];
+            renderHistory(window.historyData);
+          } catch (err) {
+            console.error("History load error:", err);
+            const container = document.getElementById("items");
+            if (container) container.innerHTML = '<div class="result-item">خطا در بارگذاری تاریخچه</div>';
+          }
+        }
+
+        function renderHistory(list) {
+          const container = document.getElementById("items");
+          if (!container) return;
+          container.innerHTML = "";
+
+          // exclude the currently open conversation from the list
+          const filteredList = (list || []).filter(c => String(c.id) !== String(window.currentConversationId));
+
+          if (!filteredList || filteredList.length === 0) {
+            container.innerHTML = '<div class="result-item">هیچ گفتگویی برای نمایش وجود ندارد</div>';
+            return;
+          }
+
+          filteredList.forEach((c) => {
+            const div = document.createElement("div");
+            div.className = "history-item";
+            div.dataset.id = c.id;
+            // Only show title and date (no preview/description)
+            div.innerHTML = `<div class="history-title">${c.title || ("گفتگو " + c.id)}</div>` +
+                            `<div class="history-time">${new Date(c.updated_at).toLocaleString()}</div>`;
+            div.addEventListener("click", () => openConversation(c.id));
+            container.appendChild(div);
+          });
+
+          // highlight current if present (should not be, since excluded) — keep for safety
+          document.querySelectorAll('.history-item').forEach(el => {
+            if (el.dataset.id == window.currentConversationId) el.classList.add('active');
+            else el.classList.remove('active');
+          });
+        }
+
+        function openConversation(id) {
+          // Navigate to the conversation page so the server template and state update properly
+          window.location.href = `/chat/${id}/`;
+        }
+        // expose to global scope so search results (outside this scope) can call it
+        window.openConversation = openConversation;
+
+        // expose loadHistory globally so toggleSub (outside scope) can call it
+        // Load and render the currently opened conversation messages
+        async function loadCurrentConversation() {
+          try {
+            const id = window.currentConversationId;
+            if (!id) return;
+            const url = MESSAGES_API_TEMPLATE.replace('/0/','/'+id+'/');
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('Failed to fetch current conversation messages');
+            const data = await res.json();
+            // clear and render
+            chatWrapper.innerHTML = '';
+            (data.messages || []).forEach(m => {
+              if (m.role === 'user') addChatMessage(m.content, true);
+              else addChatReply(m.content);
+            });
+            // mark active in sidebar
+            document.querySelectorAll('.history-item').forEach(el => {
+              el.classList.toggle('active', el.dataset.id == id);
+            });
+          } catch (err) {
+            console.error('loadCurrentConversation error:', err);
+          }
+        }
+
+        window.loadHistory = loadHistory;
+
+        // call loadCurrentConversation on first load so the chat area shows previous messages
+        if (window.currentConversationId) loadCurrentConversation();
 
         function getCSRF() {
           const cookieValue = document.cookie
@@ -751,7 +874,12 @@
 
       function toggleSub() {
         const sub = document.getElementById("submenu");
-        sub.style.display = sub.style.display === "block" ? "none" : "block";
+        const isOpen = sub.style.display === "block";
+        sub.style.display = isOpen ? "none" : "block";
+        if (!isOpen) {
+          // load history when opening
+          if (window.loadHistory) window.loadHistory();
+        }
       }
 
       function searchItems(value) {
@@ -762,22 +890,41 @@
         res.innerHTML = "";
 
         if (!value) {
+          // show full history (don't hide the menu/submenu)
           res.style.display = "none";
-          menu.style.display = "block";
+          item.style.display = "block";
+          if (window.historyData && window.historyData.length) renderHistory(window.historyData);
           return;
         }
 
-        item.style.display = "none";
-        res.style.display = "block";
+        // filter history by title or preview (case-insensitive)
+        const q = (value || '').trim().toLowerCase();
+        const filtered = (window.historyData || []).filter(c => {
+          // exclude current conversation
+          if (String(c.id) === String(window.currentConversationId)) return false;
+          const title = (c.title || '').toString().toLowerCase();
+          const preview = (c.preview || '').toString().toLowerCase();
+          return title.includes(q) || preview.includes(q);
+        });
 
-        items
-          .filter((i) => i.includes(value))
-          .forEach((i) => {
+        item.innerHTML = "";
+        if (!filtered.length) {
+          item.innerHTML = '<div class="result-item">هیچ نتیجه‌ای یافت نشد</div>';
+        } else {
+          filtered.forEach(c => {
             const div = document.createElement("div");
-            div.className = "result-item";
-            div.innerText = i;
-            res.appendChild(div);
+            div.className = "history-item";
+            div.dataset.id = c.id;
+            div.innerHTML = `<div class="history-title">${c.title || ('گفتگو ' + c.id)}</div>` +
+                            `<div class="history-time">${new Date(c.updated_at).toLocaleString()}</div>`;
+            div.addEventListener('click', () => openConversation(c.id));
+            item.appendChild(div);
           });
+        }
+
+        // Keep the submenu open; show filtered items
+        res.style.display = "none";
+        item.style.display = "block";
       }
     </script>
   </body>
