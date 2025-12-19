@@ -2,6 +2,8 @@
 <html lang="fa">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>ثبت اختراع هوشمند</title>
     {% load static %}
 
@@ -72,7 +74,7 @@
       .sitename h3 {
         font-size: 22px;
         margin-bottom: 27px;
-        margin-left: 50px;
+        margin-left: 90px;
         margin-top: 37px;
       }
 
@@ -138,15 +140,19 @@
           height: auto;
         }
 
-        .phote {
+        /* .phote {
           flex: none;
           height: 250px;
           font-size: 1.5rem;
-        }
+        } */
 
         .name {
           padding: 20px;
           padding-bottom: 100px;
+          margin-top: 50%;
+        }
+        .patra {
+          margin-bottom: 30%;
         }
 
         .sitename {
@@ -173,6 +179,12 @@
       }
 
       @media (max-width: 576px) {
+        .sitename h2 {
+          font-size: 17px;
+        }
+        .sitename h3 {
+          font-size: 16px;
+        }
         .sitename {
           width: 90%;
           padding: 20px;
@@ -180,6 +192,8 @@
 
         .mobil-number input {
           font-size: 16px;
+          position: relative;
+          padding: 20px 11px;
         }
 
         .link {
@@ -194,6 +208,21 @@
         .name button {
           font-size: 18px;
           border-width: 3px;
+        }
+        .patra {
+          width: 150px;
+        }
+
+        .mobil-number span {
+          position: relative;
+
+          transform: translateY(-50%);
+        }
+        .phone-icon {
+          position: absolute;
+          left: 90%;
+          margin-left: 35px;
+          top: 10%;
         }
       }
       .wrongnumber {
@@ -237,6 +266,7 @@
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
           xmlns:xlink="http://www.w3.org/1999/xlink"
+          class="patra"
         >
           <g filter="url(#filter0_d_453_104)">
             <rect

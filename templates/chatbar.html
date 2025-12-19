@@ -12,13 +12,15 @@
         <button class="menu-icon" id="menuToggle" onclick="toggleSidebar()">
           ☰
         </button>
-        <button onclick="downloadWord({{ conversation.id }})">دانلود Word</button>
+        <button onclick="downloadWord({{ conversation.id }})">
+          دانلود Word
+        </button>
 
-<script>
-function downloadWord(conversationId) {
-    window.location.href = `/chat/conversation/${conversationId}/download-word/`;
-}
-</script>
+        <script>
+          function downloadWord(conversationId) {
+            window.location.href = `/chat/conversation/${conversationId}/download-word/`;
+          }
+        </script>
 
         <div class="site-logo">
           <svg
@@ -177,7 +179,30 @@ function downloadWord(conversationId) {
 
         <div class="links">
           <a href="{% url 'options' %}">گفتو گو جدید</a>
-          <a href="{% url 'options' %}">تاریخچه</a>
+          <a class="menu-item" onclick="toggleSub()">تاریخچه</a>
+          <div class="app">
+            <div id="menu">
+              <div class="submenu" id="submenu">
+                <div class="history src">
+                  <input
+                    class="search"
+                    placeholder="جستجو کنید"
+                    oninput="searchItems(this.value)"
+                  />
+                </div>
+                <div id="items">
+                  <div>پاستا غنی شده</div>
+                  <div>لامپ</div>
+                  <div>تلفن</div>
+                  <div>برق</div>
+                  <div>ماشین</div>
+                  <div>صندلی</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="results" id="results"></div>
+          </div>
           <a href="{% url 'options' %}">خرید اشتراک</a>
           <a href="{% url 'home' %}">خانه</a>
         </div>
@@ -243,6 +268,38 @@ function downloadWord(conversationId) {
 
         #uploadfile {
           display: none;
+        }
+        .search {
+          background: transparent;
+          border: 1px solid #ccc;
+          border-radius: 20px;
+          padding: 8px 16px;
+          width: 90%;
+          color: white;
+        }
+        .src {
+          padding-bottom: 40px !important;
+          padding-right: 4px !important ;
+          border-bottom-left-radius: 30px;
+          border-bottom-right-radius: 30px;
+        }
+        .submenu {
+          display: none;
+          background: #fff;
+        }
+
+        .submenu div {
+          padding: 16px;
+          border-bottom: 1px solid #eee;
+        }
+
+        .results {
+          display: none;
+        }
+
+        .result-item {
+          padding: 18px;
+          border-bottom: 1px solid #ccc;
         }
       </style>
 
@@ -689,6 +746,38 @@ function downloadWord(conversationId) {
            document
           .querySelector(".chat-input-box")
           .classList.toggle("chat-shrink");
+      }
+            const items = ["پاستا غنی شده", "لامپ", "تلفن", "برق", "ماشین", "صندلی"];
+
+      function toggleSub() {
+        const sub = document.getElementById("submenu");
+        sub.style.display = sub.style.display === "block" ? "none" : "block";
+      }
+
+      function searchItems(value) {
+        const res = document.getElementById("results");
+        const menu = document.getElementById("menu");
+        const item = document.getElementById("items");
+
+        res.innerHTML = "";
+
+        if (!value) {
+          res.style.display = "none";
+          menu.style.display = "block";
+          return;
+        }
+
+        item.style.display = "none";
+        res.style.display = "block";
+
+        items
+          .filter((i) => i.includes(value))
+          .forEach((i) => {
+            const div = document.createElement("div");
+            div.className = "result-item";
+            div.innerText = i;
+            res.appendChild(div);
+          });
       }
     </script>
   </body>
