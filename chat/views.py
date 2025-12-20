@@ -8,9 +8,12 @@ from .service import ask_openai
 from .models import Conversation, Message
 import os
 from django.conf import settings
-from .Services.WordExporter import json_to_word
+from .Services.WordExporter import  claims_to_word, description_to_word, summary_to_word
 from django.http import FileResponse, Http404
 import json
+import zipfile
+from django.http import FileResponse, Http404
+
 
 
 logger = logging.getLogger(__name__)
@@ -344,29 +347,39 @@ def chat_view(request, pk):
         return render(request, 'chatbar.html', {'conversation': conversation})
 
 
-def download_last_ai_word(request, conversation_id):
+def download_invention_zip(request, conversation_id):
     try:
-        # گرفتن مکالمه
         conversation = Conversation.objects.get(id=conversation_id)
 
-        # آخرین پیام AI
-        last_ai_message = conversation.messages.filter(role='assistant').order_by('-created_at').first()
-        if not last_ai_message:
-            raise Http404("پیام AI یافت نشد.")
+        last_ai = conversation.messages.filter(
+            role='assistant'
+        ).order_by('-created_at').first()
 
-        # مسیر فایل Word
-        os.makedirs(settings.MEDIA_ROOT, exist_ok=True)
-        word_filename = f"invention_{conversation.id}.docx"
-        word_filepath = os.path.join(settings.MEDIA_ROOT, word_filename)
+        if not last_ai:
+            raise Http404("پیام AI یافت نشد")
 
-        # تبدیل JSON به Word
-        json_data = json.loads(last_ai_message.content)
-        json_to_word(json_data, word_filepath)
+        patent_json = json.loads(last_ai.content)
 
-        # ارسال فایل برای دانلود
-        return FileResponse(open(word_filepath, 'rb'), as_attachment=True, filename=word_filename)
+        base_dir = os.path.join(settings.MEDIA_ROOT, f"invention_{conversation.id}")
+        os.makedirs(base_dir, exist_ok=True)
+
+        p1 = os.path.join(base_dir, "01_خلاصه_اختراع.docx")
+        p2 = os.path.join(base_dir, "02_توضیح_اختراع.docx")
+        p3 = os.path.join(base_dir, "03_ادعانامه.docx")
+
+        summary_to_word(patent_json, p1)
+        description_to_word(patent_json, p2)
+        claims_to_word(patent_json, p3)
+
+        zip_path = os.path.join(settings.MEDIA_ROOT, f"invention_{conversation.id}.zip")
+        with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
+            zipf.write(p1, os.path.basename(p1))
+            zipf.write(p2, os.path.basename(p2))
+            zipf.write(p3, os.path.basename(p3))
+
+        return FileResponse(open(zip_path, "rb"), as_attachment=True,
+                            filename=f"invention_{conversation.id}.zip")
 
     except Conversation.DoesNotExist:
-        raise Http404("مکالمه یافت نشد.")
-    except Exception as e:
-        raise Http404(f"خطا در ساخت فایل Word: {str(e)}")
+        raise Http404("مکالمه یافت نشد")
+
