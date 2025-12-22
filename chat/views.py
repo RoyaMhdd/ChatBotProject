@@ -144,15 +144,6 @@ class ChatAPIView(APIView):
                     status=status.HTTP_404_NOT_FOUND
                 )
 
-            # If this is the first user message for this conversation, update the title
-            has_user_messages = conversation.messages.filter(role=Message.ROLE_USER).exists()
-            if not has_user_messages:
-                # set a concise title based on the user's first message
-                new_title = (user_message[:10]+"...").strip()
-                if new_title:
-                    conversation.title = new_title
-                    conversation.save(update_fields=['title', 'updated_at'])
-                    logger.info(f"Updated conversation title to: {conversation.title}")
 
             # Save user message to database
             user_msg = Message.objects.create(
@@ -237,8 +228,36 @@ class ChatAPIView(APIView):
             # فرض: کل خروجی مدل، فرم فعلی اختراع (مثلاً JSON) است
             conversation.last_form = reply
 
-            # Update conversation last_form and updated_at
-            conversation.save(update_fields=['last_form', 'updated_at'])
+            # Try to extract a title provided by the AI (expected to be in the JSON response)
+            new_title = None
+            try:
+                parsed = json.loads(reply)
+                if isinstance(parsed, dict):
+                    for key in ('title', 'conversation_title', 'invention_title', 'name', 'subject'):
+                        val = parsed.get(key)
+                        if val and isinstance(val, str) and val.strip():
+                            new_title = val.strip()
+                            break
+            except json.JSONDecodeError:
+                # reply is not JSON — fallback below
+                pass
+            except Exception as e:
+                logger.warning(f"Error parsing AI reply for title: {e}")
+
+            # Fallback to using the first non-empty line of the reply
+            if not new_title and isinstance(reply, str):
+                first_line = next((line.strip() for line in reply.splitlines() if line.strip()), None)
+                if first_line:
+                    new_title = first_line[:100]
+
+            # Apply the title if found (truncate to 100 chars)
+            if new_title:
+                conversation.title = new_title[:100]
+                conversation.save(update_fields=['last_form', 'title', 'updated_at'])
+                logger.info(f"Updated conversation title to: {conversation.title}")
+            else:
+                # No title found — just save last_form and updated_at
+                conversation.save(update_fields=['last_form', 'updated_at'])
 
             logger.info(f"Message saved successfully for conversation {conversation.id}")
 
@@ -340,6 +359,34 @@ class ConversationMessagesAPIView(APIView):
                 {"error": f"خطای سرور: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+
+class UpdateConversationTitleAPIView(APIView):
+    """Update the title for a conversation (owner-only when conversation.user is set)"""
+    permission_classes = [AllowAny]
+
+    def post(self, request, conversation_id):
+        try:
+            new_title = (request.data.get("title") or "").strip()
+            if new_title == "":
+                return Response({"error": "title is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            user = request.user if hasattr(request.user, 'id') and request.user.id else None
+
+            try:
+                if user:
+                    conversation = Conversation.objects.get(id=conversation_id, user=user)
+                else:
+                    conversation = Conversation.objects.get(id=conversation_id)
+            except Conversation.DoesNotExist:
+                return Response({"error": "مکالمه یافت نشد."}, status=status.HTTP_404_NOT_FOUND)
+
+            conversation.title = new_title
+            conversation.save(update_fields=['title', 'updated_at'])
+            return Response({"conversation_id": conversation.id, "title": conversation.title}, status=status.HTTP_200_OK)
+        except Exception as e:
+            logger.error(f"Update Conversation Title Error: {str(e)}", exc_info=True)
+            return Response({"error": f"خطای سرور: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 def chat_view(request, pk):
