@@ -103,6 +103,11 @@
           position: relative;
           z-index: 1;
         }
+        .menu-icon.disabled {
+          pointer-events: none;
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
         .chat-container {
           display: flex;
           flex-direction: column;
@@ -120,6 +125,7 @@
           padding: 0 20px;
           transition: width 0.3s ease;
           margin-right: 0;
+          z-index: 10000;
         }
         .site-logo {
           font-size: 23px;
@@ -179,8 +185,6 @@
 
             <a class="menu-item" onclick="toggleSub()">تاریخچه</a>
 
-            <div class="overlay" id="overlay" onclick="closeHistory()"></div>
-
             <a href="{% url 'options' %}">خرید اشتراک</a>
             <a href="{% url 'home' %}">خانه</a>
           </div>
@@ -203,11 +207,36 @@
                   />
                 </svg>
               </span>
-              <input
-                class="search"
-                placeholder="جستجو کنید"
-                oninput="searchItems(this.value)"
-              />
+              <div class="input-section1">
+                <svg
+                  width="18"
+                  height="21"
+                  viewBox="0 0 18 21"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="search-icon"
+                >
+                  <g opacity="0.9">
+                    <circle
+                      cx="8.20705"
+                      cy="8.20711"
+                      r="6.25"
+                      transform="rotate(-11 8.20705 8.20711)"
+                      stroke="#F7F9FB"
+                      stroke-width="1.5"
+                    />
+                    <path
+                      d="M15.8243 18.232C16.1899 18.6461 16.8218 18.6854 17.2358 18.3199C17.6498 17.9543 17.6892 17.3224 17.3236 16.9084L16.574 17.5702L15.8243 18.232ZM12.0576 12.4546L11.308 13.1164L15.8243 18.232L16.574 17.5702L17.3236 16.9084L12.8073 11.7928L12.0576 12.4546Z"
+                      fill="#F7F9FB"
+                    />
+                  </g>
+                </svg>
+                <input
+                  class="search"
+                  placeholder="جستجو کنید"
+                  oninput="searchItems(this.value)"
+                />
+              </div>
             </div>
             <div id="items">
               <!-- History list rendered here -->
@@ -216,11 +245,19 @@
               </div>
             </div>
           </div>
-
           <div class="results" id="results"></div>
         </div>
       </aside>
       <style>
+        .input-section1 {
+          display: flex;
+          align-items: flex-end;
+        }
+        .input-section1 svg {
+          position: absolute;
+          left: 10%;
+          bottom: 5px;
+        }
         .app {
           position: fixed;
           inset: 0;
@@ -274,7 +311,7 @@
           margin: 0;
           font-size: 10px;
           border: 1px solid black;
-          padding: 30px;
+          padding: 20px;
           margin: 0;
           background-color: #0b1d36;
           color: white;
@@ -316,10 +353,11 @@
           padding: 8px;
           width: 85%;
           color: white;
+          position: relative;
         }
         .src {
           padding-bottom: 40px !important;
-          padding-right: 4px !important ;
+          padding-right: 20px !important ;
           border-bottom-left-radius: 30px;
           border-bottom-right-radius: 30px;
         }
@@ -401,6 +439,39 @@
           gap: 12px;
         }
       </style>
+      <div id="creativity-overlay" class="overlay">
+        <div class="modal">
+          <div class="modal-header">
+            <span id="help-icon"
+              ><svg
+                width="16"
+                height="20"
+                viewBox="0 0 16 27"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M9.80859 18.123H5.32617C5.33789 17.0684 5.41992 16.1602 5.57227 15.3984C5.73633 14.625 6.01172 13.9277 6.39844 13.3066C6.79688 12.6855 7.32422 12.0703 7.98047 11.4609C8.53125 10.9688 9.01172 10.5 9.42188 10.0547C9.83203 9.60938 10.1543 9.15234 10.3887 8.68359C10.623 8.20312 10.7402 7.66992 10.7402 7.08398C10.7402 6.07617 10.5059 5.31445 10.0371 4.79883C9.58008 4.27148 8.90039 4.00781 7.99805 4.00781C7.24805 4.00781 6.58008 4.25391 5.99414 4.74609C5.4082 5.22656 5.10938 6.00586 5.09766 7.08398H0C0.0351562 5.47852 0.404297 4.1543 1.10742 3.11133C1.82227 2.05664 2.77734 1.27734 3.97266 0.773438C5.16797 0.257813 6.50977 0 7.99805 0C10.459 0 12.3809 0.597656 13.7637 1.79297C15.1465 2.97656 15.8379 4.66992 15.8379 6.87305C15.8379 7.89258 15.6387 8.80078 15.2402 9.59766C14.8418 10.3828 14.3203 11.1152 13.6758 11.7949C13.0312 12.4746 12.3223 13.1777 11.5488 13.9043C10.8809 14.502 10.4238 15.1289 10.1777 15.7852C9.94336 16.4414 9.82031 17.2207 9.80859 18.123ZM4.79883 23.5547C4.79883 22.8047 5.05664 22.1836 5.57227 21.6914C6.08789 21.1875 6.7793 20.9355 7.64648 20.9355C8.50195 20.9355 9.1875 21.1875 9.70312 21.6914C10.2305 22.1836 10.4941 22.8047 10.4941 23.5547C10.4941 24.2812 10.2305 24.8965 9.70312 25.4004C9.1875 25.9043 8.50195 26.1562 7.64648 26.1562C6.7793 26.1562 6.08789 25.9043 5.57227 25.4004C5.05664 24.8965 4.79883 24.2812 4.79883 23.5547Z"
+                  fill="white"
+                />
+              </svg>
+            </span>
+            <p>میزان خلاقیت چت بات را انتخاب کنید!</p>
+          </div>
+
+          <div class="modal-actions">
+            <button data-value="high">کم</button>
+            <button data-value="low">زیاد</button>
+          </div>
+        </div>
+
+        <!-- متن راهنما -->
+        <div id="help-box" class="help-box">
+          با افزایش میزان خلاقیت، <br />چت‌بات در تغییر و تکمیل
+
+          <br />توضیحات شما در مورد <br />اختراعاتتان دسترسی بیشتری دارد.
+        </div>
+      </div>
 
       <div class="chat-main" id="chatWindow">
         <div id="user-chat">
@@ -543,6 +614,70 @@
     </div>
 
     <style>
+      .search::placeholder {
+        color: rgba(247, 249, 251, 0.5);
+        font-family: inherit !important;
+      }
+      #help-icon {
+        cursor: pointer;
+        font-size: 20px;
+        margin-left: 10px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .help-box {
+        position: absolute;
+        left: 160px;
+        top: 120px;
+        background: white;
+        color: #333;
+        padding: 30px 15px;
+        border-radius: 15px;
+        width: 190px;
+        display: none;
+      }
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(150, 150, 150, 0.8);
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .modal {
+        background: #2c3044;
+        color: white;
+        padding: 20px 10px;
+        border-radius: 20px;
+        padding-bottom: 50px;
+        width: 40%;
+        text-align: center;
+      }
+      .modal-header p {
+        margin-top: 0;
+        margin-bottom: 30px;
+      }
+
+      .modal-actions button {
+        margin: 10px;
+        padding: 12px 100px;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        font-family: inherit !important;
+        margin-bottom: 0;
+      }
+      #chatWindow {
+        pointer-events: none;
+        filter: blur(2px);
+      }
+      #box {
+        pointer-events: none;
+        filter: blur(2px);
+      }
       .chat-main {
         margin-top: 10px;
         height: calc(100vh - 170px);
@@ -659,6 +794,22 @@
         padding: 8px 8px 0 8px;
         font-size: 14px;
       }
+      .thinking {
+        opacity: 0.5;
+        animation: pulse 1.4s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.4;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.4;
+        }
+      }
       @media (max-width: 1400px) {
         .sidebar {
           width: 20%;
@@ -716,7 +867,7 @@
         const chatWrapper = document.getElementById("user-chat");
         const messageInput = document.getElementById("messageInput");
         const chatWindow = document.getElementById("chatWindow");
-        const button=document.getElementById("send");
+        const button = document.getElementById("send");
 
         // track currently open conversation (start with server-rendered conversation)
         window.currentConversationId = {{ conversation.id }};
@@ -725,253 +876,304 @@
         window.historyData = [];
 
         function addChatMessage(msg, fromUser = true) {
-              const bubble = document.createElement("div");
-              bubble.className = "user-massage";
-              bubble.innerText = msg;
-              if (fromUser) bubble.style.alignSelf = "end-flex";
-              chatWrapper.appendChild(bubble);
-              chatWindow.scrollTop = chatWindow.scrollHeight;
-              }
+          const bubble = document.createElement("div");
+          bubble.className = "user-massage";
+          bubble.innerText = msg;
+          if (fromUser) bubble.style.alignSelf = "end-flex";
+          chatWrapper.appendChild(bubble);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
         function addChatReply(msg) {
-              const bubble = document.createElement("div");
-              bubble.className = "chat-bubble";
-              bubble.innerText = msg;
-              chatWrapper.appendChild(bubble);
-              chatWindow.scrollTop = chatWindow.scrollHeight;
-              }
+          const bubble = document.createElement("div");
+          bubble.className = "chat-bubble";
+          bubble.innerText = msg;
+          chatWrapper.appendChild(bubble);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
 
         uploadFile.addEventListener("change", function () {
-              const file = this.files && this.files[0];
-              if (!file) return;
-              messageInput.value = file.name;
-              const formData = new FormData();
-              formData.append("file", file);
+          const file = this.files && this.files[0];
+          if (!file) return;
+          messageInput.value = file.name;
+          const formData = new FormData();
+          formData.append("file", file);
 
-              fetch("/upload-file/", { method: "POST", body: formData })
-                  .then((response) => response.json())
-                  .then((data) => console.log("File uploaded:", data))
-                .catch((error) => console.error("Upload error:", error));
-              });
+          fetch("/upload-file/", { method: "POST", body: formData })
+            .then((response) => response.json())
+            .then((data) => console.log("File uploaded:", data))
+            .catch((error) => console.error("Upload error:", error));
+        });
 
-            button.addEventListener("click", sendmassage);
-            messageInput.addEventListener("keydown",function (e) {
-                if(e.key==="Enter"){
-                  e.preventDefault();
-                  sendmassage()
-                            }
+        button.addEventListener("click", sendmassage);
+        messageInput.addEventListener("keydown", function (e) {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            sendmassage();
+          }
+        });
+        function sendmassage() {
+          const text = messageInput.value.trim();
+          if (!text) return;
+          const isFileName = /\.(pdf|docx?|pptx?|jpg|jpeg|png|gif)$/i.test(
+            text
+          );
 
-          });
-          function sendmassage () {
-              const text = messageInput.value.trim();
-              if (!text) return;
-              const isFileName = /\.(pdf|docx?|pptx?|jpg|jpeg|png|gif)$/i.test(
-                      text
-                      );
-
-              if (isFileName) {
-                  addChatMessage(`📄 ${text}`);
-                  } else {
-                    addChatMessage(text);
-                    sendToBackend(text);
-                    }
-
-            messageInput.value = "";
-
+          if (isFileName) {
+            addChatMessage(`📄 ${text}`);
+          } else {
+            addChatMessage(text);
+            sendToBackend(text);
           }
 
+          messageInput.value = "";
+        }
+        function addThinking() {
+          const bubble = document.createElement("div");
+          bubble.className = "chat-bubble thinking";
+          bubble.id = "thinking-bubble";
+          bubble.innerText = "در حال فکر کردن...";
+          chatWrapper.appendChild(bubble);
+          chatWindow.scrollTop = chatWindow.scrollHeight;
+        }
+        function removeThinking() {
+          const thinking = document.getElementById("thinking-bubble");
+          if (thinking) thinking.remove();
+        }
 
+        async function sendToBackend(message) {
+          const USE_MOCK = false; // حتماً false باشد تا سرور واقعی صدا زده شود
+          addThinking();
+          try {
+            const response = await fetch("{% url 'chat_api' %}", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRF(),
+              },
+              body: JSON.stringify({
+                message: message,
+                conversation_id: window.currentConversationId,
+              }),
+            });
 
-          async function sendToBackend(message) {
-            const USE_MOCK = false; // حتماً false باشد تا سرور واقعی صدا زده شود
-            try {
-                const response = await fetch("{% url 'chat_api' %}", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                        "X-CSRFToken": getCSRF(),
-                                },
-                    body: JSON.stringify({
-                          message: message,
-                          conversation_id: window.currentConversationId,
-                      }),
-                  });
+            const data = await response.json();
+            removeThinking();
+            // ذخیره conversation_id
+            if (data.conversation_id) {
+              window.currentConversationId = data.conversation_id;
+            }
 
-                const data = await response.json();
+            // بررسی reply و خطا
+            const replyText =
+              data.reply || data.error || "⚠️ پاسخ سرور نامشخص است";
+            addChatReply(replyText);
+          } catch (err) {
+            console.error("Fetch error:", err);
+            addChatReply("⚠️ خطا در اتصال به سرور");
+          }
+        }
 
-                              // ذخیره conversation_id
-                if (data.conversation_id) {
-                  window.currentConversationId = data.conversation_id;
-                  }
+        // Load chat history from server and render in sidebar
+        async function loadHistory() {
+          try {
+            const res = await fetch(HISTORY_API);
+            if (!res.ok) throw new Error("Failed to load history");
+            const data = await res.json();
+            window.historyData = data.conversations || [];
+            renderHistory(window.historyData);
+          } catch (err) {
+            console.error("History load error:", err);
+            const container = document.getElementById("items");
+            if (container)
+              container.innerHTML =
+                '<div class="result-item">خطا در بارگذاری تاریخچه</div>';
+          }
+        }
 
-                              // بررسی reply و خطا
-              const replyText =
-                                data.reply || data.error || "⚠️ پاسخ سرور نامشخص است";
-                              addChatReply(replyText);
-                            } catch (err) {
-                              console.error("Fetch error:", err);
-                              addChatReply("⚠️ خطا در اتصال به سرور");
-                            }
-                          }
-
-                          // Load chat history from server and render in sidebar
-          async function loadHistory() {
-                            try {
-                              const res = await fetch(HISTORY_API);
-                              if (!res.ok) throw new Error("Failed to load history");
-                              const data = await res.json();
-                              window.historyData = data.conversations || [];
-                              renderHistory(window.historyData);
-                            } catch (err) {
-                              console.error("History load error:", err);
-                              const container = document.getElementById("items");
-                              if (container) container.innerHTML = '<div class="result-item">خطا در بارگذاری تاریخچه</div>';
-                            }
-                          }
-
-          function renderHistory(list) {
-                            const container = document.getElementById("items");
-                            if (!container) return;
-                            container.innerHTML = "";
+        function renderHistory(list) {
+          const container = document.getElementById("items");
+          if (!container) return;
+          container.innerHTML = "";
 
           // exclude the currently open conversation from the list
-          const filteredList = (list || []).filter(c => String(c.id));
+          const filteredList = (list || []).filter((c) => String(c.id));
 
-                            if (!filteredList || filteredList.length === 0) {
-                              container.innerHTML = '<div class="result-item">هیچ گفتگویی برای نمایش وجود ندارد</div>';
-                              return;
-                            }
+          if (!filteredList || filteredList.length === 0) {
+            container.innerHTML =
+              '<div class="result-item">هیچ گفتگویی برای نمایش وجود ندارد</div>';
+            return;
+          }
 
-                            filteredList.forEach((c) => {
-                              const div = document.createElement("div");
-                              div.className = "history-item";
-                              div.dataset.id = c.id;
-                              // Only show title and date (no preview/description)
-                              div.innerHTML = `<div class="history-title">${c.title || ("گفتگو " + c.id)}</div>` +
-                                              `<div class="history-time">${new Date(c.updated_at).toLocaleString()}</div>`;
-                              div.addEventListener("click", () => openConversation(c.id));
-                              container.appendChild(div);
-                            });
+          filteredList.forEach((c) => {
+            const div = document.createElement("div");
+            div.className = "history-item";
+            div.dataset.id = c.id;
+            // Only show title and date (no preview/description)
+            div.innerHTML =
+              `<div class="history-title">${c.title || "گفتگو " + c.id}</div>` +
+              `<div class="history-time">${new Date(
+                c.updated_at
+              ).toLocaleString()}</div>`;
+            div.addEventListener("click", () => openConversation(c.id));
+            container.appendChild(div);
+          });
 
-                            // highlight current if present (should not be, since excluded) — keep for safety
-                            document.querySelectorAll('.history-item').forEach(el => {
-                              if (el.dataset.id == window.currentConversationId) el.classList.add('active');
-                              else el.classList.remove('active');
-                            });
-                          }
+          // highlight current if present (should not be, since excluded) — keep for safety
+          document.querySelectorAll(".history-item").forEach((el) => {
+            if (el.dataset.id == window.currentConversationId)
+              el.classList.add("active");
+            else el.classList.remove("active");
+          });
+        }
 
-            function openConversation(id) {
-                            // Navigate to the conversation page so the server template and state update properly
-                            window.location.href = `/chat/${id}/`;
-                          }
-                          // expose to global scope so search results (outside this scope) can call it
-                          window.openConversation = openConversation;
+        function openConversation(id) {
+          // Navigate to the conversation page so the server template and state update properly
+          window.location.href = `/chat/${id}/`;
+        }
+        // expose to global scope so search results (outside this scope) can call it
+        window.openConversation = openConversation;
 
-                          // expose loadHistory globally so toggleSub (outside scope) can call it
-                          // Load and render the currently opened conversation messages
-                          async function loadCurrentConversation() {
-                            try {
-                              const id = window.currentConversationId;
-                              if (!id) return;
-                              const url = MESSAGES_API_TEMPLATE.replace('/0/','/'+id+'/');
-                              const res = await fetch(url);
-                              if (!res.ok) throw new Error('Failed to fetch current conversation messages');
-                              const data = await res.json();
-                              // clear and render
-                              chatWrapper.innerHTML = '';
-                              (data.messages || []).forEach(m => {
-                                if (m.role === 'user') addChatMessage(m.content, true);
-                                else addChatReply(m.content);
-                              });
-                              // mark active in sidebar
-                              document.querySelectorAll('.history-item').forEach(el => {
-                                el.classList.toggle('active', el.dataset.id == id);
-                              });
-                            } catch (err) {
-                              console.error('loadCurrentConversation error:', err);
-                            }
-                          }
+        // expose loadHistory globally so toggleSub (outside scope) can call it
+        // Load and render the currently opened conversation messages
+        async function loadCurrentConversation() {
+          try {
+            const id = window.currentConversationId;
+            if (!id) return;
+            const url = MESSAGES_API_TEMPLATE.replace("/0/", "/" + id + "/");
+            const res = await fetch(url);
+            if (!res.ok)
+              throw new Error("Failed to fetch current conversation messages");
+            const data = await res.json();
+            // clear and render
+            chatWrapper.innerHTML = "";
+            (data.messages || []).forEach((m) => {
+              if (m.role === "user") addChatMessage(m.content, true);
+              else addChatReply(m.content);
+            });
+            // mark active in sidebar
+            document.querySelectorAll(".history-item").forEach((el) => {
+              el.classList.toggle("active", el.dataset.id == id);
+            });
+          } catch (err) {
+            console.error("loadCurrentConversation error:", err);
+          }
+        }
 
-                          window.loadHistory = loadHistory;
+        window.loadHistory = loadHistory;
 
-                          // call loadCurrentConversation on first load so the chat area shows previous messages
-                          if (window.currentConversationId) loadCurrentConversation();
+        // call loadCurrentConversation on first load so the chat area shows previous messages
+        if (window.currentConversationId) loadCurrentConversation();
 
-          function getCSRF() {
-                            const cookieValue = document.cookie
-                              .split("; ")
-                              .find((row) => row.startsWith("csrftoken="));
-                            return cookieValue ? cookieValue.split("=")[1] : "";
-                          }
-                        });
+        function getCSRF() {
+          const cookieValue = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("csrftoken="));
+          return cookieValue ? cookieValue.split("=")[1] : "";
+        }
+      });
 
-          function toggleSidebar() {
-                          document.querySelector(".sidebar").classList.toggle("sidebar-open");
-                          document
-                            .querySelector(".chat-header")
-                            .classList.toggle("header-shrink");
-                            document
-                            .querySelector(".chat-input-box")
-                            .classList.toggle("chat-shrink");
-              }
+      function toggleSidebar() {
+        document.querySelector(".sidebar").classList.toggle("sidebar-open");
+        document
+          .querySelector(".chat-header")
+          .classList.toggle("header-shrink");
+        document
+          .querySelector(".chat-input-box")
+          .classList.toggle("chat-shrink");
+      }
 
+      function toggleSub() {
+        document.getElementById("submenu").classList.add("open");
+        const submenu = document.getElementById("app");
 
-          function toggleSub() {
+        document.getElementById("toolbar").style.display = "none"; // کل آیتم‌های sidebar مخفی
+        submenu.style.display = "block"; // فقط تاریخچه دیده شود
+      }
 
-              document.getElementById('submenu').classList.add('open');
-              const submenu = document.getElementById("app");
+      function searchItems(value) {
+        const res = document.getElementById("results");
+        const menu = document.getElementById("menu");
+        const item = document.getElementById("items");
+        res.innerHTML = "";
 
-              document.getElementById("toolbar").style.display = "none";     // کل آیتم‌های sidebar مخفی
-              submenu.style.display = "block"; // فقط تاریخچه دیده شود
-            }
+        if (!value) {
+          // show full history (don't hide the menu/submenu)
+          res.style.display = "none";
+          item.style.display = "block";
+          if (window.historyData && window.historyData.length)
+            renderHistory(window.historyData);
+          return;
+        }
 
-          function searchItems(value) {
-              const res = document.getElementById("results");
-              const menu = document.getElementById("menu");
-              const item = document.getElementById("items");
-              res.innerHTML = "";
+        // filter history by title or preview (case-insensitive)
+        const q = (value || "").trim().toLowerCase();
+        const filtered = (window.historyData || []).filter((c) => {
+          // exclude current conversation
+          if (String(c.id) === String(window.currentConversationId))
+            return false;
+          const title = (c.title || "").toString().toLowerCase();
+          const preview = (c.preview || "").toString().toLowerCase();
+          return title.includes(q) || preview.includes(q);
+        });
 
-              if (!value) {
-                  // show full history (don't hide the menu/submenu)
-                  res.style.display = "none";
-                  item.style.display = "block";
-                  if (window.historyData && window.historyData.length) renderHistory(window.historyData);
-                        return;
-                  }
+        item.innerHTML = "";
+        if (!filtered.length) {
+          item.innerHTML =
+            '<div class="result-item">هیچ نتیجه‌ای یافت نشد</div>';
+        } else {
+          filtered.forEach((c) => {
+            const div = document.createElement("div");
+            div.className = "history-item";
+            div.dataset.id = c.id;
+            div.innerHTML =
+              `<div class="history-title">${c.title || "گفتگو " + c.id}</div>` +
+              `<div class="history-time">${new Date(
+                c.updated_at
+              ).toLocaleString()}</div>`;
+            div.addEventListener("click", () => openConversation(c.id));
+            item.appendChild(div);
+          });
+        }
 
-                  // filter history by title or preview (case-insensitive)
-                  const q = (value || '').trim().toLowerCase();
-                      const filtered = (window.historyData || []).filter(c => {
-                      // exclude current conversation
-                          if (String(c.id) === String(window.currentConversationId)) return false;
-                          const title = (c.title || '').toString().toLowerCase();
-                          const preview = (c.preview || '').toString().toLowerCase();
-                          return title.includes(q) || preview.includes(q);
-                      });
+        // Keep the submenu open; show filtered items
+      }
+      function closeHistory() {
+        document.getElementById("submenu").classList.remove("open");
+        const submenu = document.getElementById("app");
+        submenu.style.display = "none"; // تاریخچه بسته شود
+        document.getElementById("toolbar").style.display = "block"; // منوی اصلی برگردد
+      }
+      let creativity = null;
+      document.getElementById("menuToggle").classList.add("disabled");
 
-                      item.innerHTML = "";
-                      if (!filtered.length) {
-                          item.innerHTML = '<div class="result-item">هیچ نتیجه‌ای یافت نشد</div>';
-                      } else {
-                          filtered.forEach(c => {
-                          const div = document.createElement("div");
-                          div.className = "history-item";
-                          div.dataset.id = c.id;
-                          div.innerHTML = `<div class="history-title">${c.title || ('گفتگو ' + c.id)}</div>` +
-                                         `<div class="history-time">${new Date(c.updated_at).toLocaleString()}</div>`;
-                          div.addEventListener('click', () => openConversation(c.id));
-                          item.appendChild(div);
-                                    });
-                          }
+      document.querySelectorAll(".modal-actions button").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          creativity = btn.dataset.value;
 
-                          // Keep the submenu open; show filtered items
-            }
-          function closeHistory() {
-              document.getElementById('submenu').classList.remove('open');
-              const submenu = document.getElementById("app");
-              submenu.style.display = "none";   // تاریخچه بسته شود
-              document.getElementById("toolbar").style.display = "block";     // منوی اصلی برگردد
-            }
+          // حذف overlay
+          document.getElementById("creativity-overlay").style.display = "none";
+
+          // فعال کردن چت
+          const chat = document.getElementById("box");
+          chat.style.pointerEvents = "auto";
+          chat.style.filter = "none";
+          const chat1 = document.getElementById("chatWindow");
+          chat1.style.pointerEvents = "auto";
+          chat1.style.filter = "none";
+          document.getElementById("menuToggle").classList.remove("disabled");
+
+          // ذخیره انتخاب (اختیاری)
+          localStorage.setItem("creativity", creativity);
+        });
+      });
+      const helpIcon = document.getElementById("help-icon");
+      const helpBox = document.getElementById("help-box");
+
+      helpIcon.addEventListener("click", () => {
+        helpBox.style.display =
+          helpBox.style.display === "block" ? "none" : "block";
+      });
     </script>
   </body>
 </html>
