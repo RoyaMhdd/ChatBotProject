@@ -834,8 +834,8 @@
                             if (!container) return;
                             container.innerHTML = "";
 
-                            // exclude the currently open conversation from the list
-                            const filteredList = (list || []).filter(c => String(c.id) !== String(window.currentConversationId));
+          // exclude the currently open conversation from the list
+          const filteredList = (list || []).filter(c => String(c.id));
 
                             if (!filteredList || filteredList.length === 0) {
                               container.innerHTML = '<div class="result-item">هیچ گفتگویی برای نمایش وجود ندارد</div>';

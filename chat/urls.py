@@ -6,6 +6,7 @@ from .views import (
     ChatHistoryAPIView,
     ChatAPIView,
     ConversationMessagesAPIView,
+    UpdateConversationTitleAPIView,
     download_invention_zip
 )
 
@@ -27,6 +28,9 @@ urlpatterns = [
 
     # Get previous messages for a specific conversation
     path('api/messages/<int:conversation_id>/', ConversationMessagesAPIView.as_view(), name='conversation_messages'),
+
+    # Update conversation title
+    path('api/conversation/<int:conversation_id>/title/', UpdateConversationTitleAPIView.as_view(), name='conversation_update_title'),
 
     path('conversation/<int:conversation_id>/download-word/',  download_invention_zip, name='download_word'),
 ]
