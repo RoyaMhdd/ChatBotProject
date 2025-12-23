@@ -3,128 +3,150 @@ import os
 from docx import Document
 from docx.shared import Pt
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from django.conf import settings
+
+
+def safe_get(d, keys, default=""):
+    """
+    گرفتن مقدار از دیکشنری چند سطحی بدون خطا
+    keys: لیست کلیدها
+    """
+    for key in keys:
+        if isinstance(d, dict) and key in d:
+            d = d[key]
+        else:
+            return default
+    return d
+
+
+def create_document():
+    doc = Document()
+    section = doc.sections[0]
+    section.right_to_left = True
+
+    style = doc.styles['Normal']
+    style.font.name = 'B Nazanin'
+    style.font.size = Pt(12)
+
+    return doc
+
+
+def add_bold_paragraph(doc, text):
+    p = doc.add_paragraph()
+    r = p.add_run(text)
+    r.bold = True
+    return p
 
 
 def summary_to_word(patent_json, output_path):
-    doc = Document()
+    doc = create_document()
 
-    section = doc.sections[0]
-    section.right_to_left = True
+    add_bold_paragraph(doc, "خلاصه اختراع :")
 
-    # فونت پیش‌فرض
-    style = doc.styles['Normal']
-    style.font.name = 'B Nazanin'
-    style.font.size = Pt(12)
+    title = safe_get(patent_json, ["patent_content", "invention_title"])
+    if title:
+        add_bold_paragraph(doc, f"عنوان اختراع: {title}")
 
-    # تیتر خلاصه اختراع
-    p = doc.add_paragraph()
-    run = p.add_run("خلاصه اختراع :")
-    run.bold = True
+    abstract = safe_get(patent_json, ["patent_content", "abstract", "text"])
+    if abstract:
+        doc.add_paragraph(abstract)
 
-    # عنوان اختراع
-    title = patent_json["patent_content"]["invention_title"]
-    p = doc.add_paragraph()
-    run = p.add_run(f"عنوان اختراع: {title}")
-    run.bold = True
-
-    # متن خلاصه
-    abstract = patent_json["patent_content"]["abstract"]["text"]
-    p = doc.add_paragraph(abstract)
-
-    doc.save(output_path)
+    try:
+        doc.save(output_path)
+    except Exception as e:
+        print(f"خطا در ذخیره فایل: {e}")
 
 
 def description_to_word(patent_json, output_path):
-    doc = Document()
+    doc = create_document()
 
-    section = doc.sections[0]
-    section.right_to_left = True
+    d = safe_get(patent_json, ["patent_content", "description"], {})
+    title = safe_get(patent_json, ["patent_content", "invention_title"])
 
-    style = doc.styles['Normal']
-    style.font.name = 'B Nazanin'
-    style.font.size = Pt(12)
-
-    d = patent_json["patent_content"]["description"]
-    title = patent_json["patent_content"]["invention_title"]
-
-    def bold_paragraph(text):
-        p = doc.add_paragraph()
-        r = p.add_run(text)
-        r.bold = True
-
-    # تیتر اصلی
-    bold_paragraph("توصیف اختراع")
+    add_bold_paragraph(doc, "توصیف اختراع")
 
     # عنوان اختراع
-    bold_paragraph("عنوان اختراع (به گونه ای که در اظهارنامه ذکر گردیده است)")
-    doc.add_paragraph(title)
+    add_bold_paragraph(doc, "عنوان اختراع (به گونه ای که در اظهارنامه ذکر گردیده است)")
+    if title:
+        doc.add_paragraph(title)
 
     # زمینه فنی
-    bold_paragraph("زمینه فنی اختراع مربوط")
-    doc.add_paragraph(d["technical_field"])
+    tech_field = safe_get(d, ["technical_field"])
+    if tech_field:
+        add_bold_paragraph(doc, "زمینه فنی اختراع مربوط")
+        doc.add_paragraph(tech_field)
 
     # مشکل فنی و اهداف
-    bold_paragraph("مشکل فنی و بیان اهداف اختراع")
+    tech_problem = safe_get(d, ["technical_problem"], [])
+    objectives = safe_get(d, ["objectives"], [])
 
-    bold_paragraph("مشکل فنی:")
-    for i, item in enumerate(d["technical_problem"], 1):
-        doc.add_paragraph(f"{i}. {item}")
+    if tech_problem or objectives:
+        add_bold_paragraph(doc, "مشکل فنی و بیان اهداف اختراع")
 
-    bold_paragraph("بیان اهداف اختراع:")
-    for i, item in enumerate(d["objectives"], 1):
-        doc.add_paragraph(f"{i}. {item}")
+    if tech_problem:
+        add_bold_paragraph(doc, "مشکل فنی:")
+        for i, item in enumerate(tech_problem, 1):
+            doc.add_paragraph(f"{i}. {item}")
+
+    if objectives:
+        add_bold_paragraph(doc, "بیان اهداف اختراع:")
+        for i, item in enumerate(objectives, 1):
+            doc.add_paragraph(f"{i}. {item}")
 
     # دانش پیشین
-    bold_paragraph("شرح وضعیت دانش پیشین و سابقه پیشرفت هایی که در ارتباط با اختراع ادعایی وجود دارد")
-    doc.add_paragraph(d["prior_art"])
+    prior_art = safe_get(d, ["prior_art"])
+    if prior_art:
+        add_bold_paragraph(doc, "شرح وضعیت دانش پیشین و سابقه پیشرفت هایی که در ارتباط با اختراع ادعایی وجود دارد")
+        doc.add_paragraph(prior_art)
 
     # راه حل
-    bold_paragraph("ارائه راه حل برای مشکل فنی موجود همراه با شرح دقیق و کافی و یکپارچه اختراع")
-    doc.add_paragraph(d["solution"])
+    solution = safe_get(d, ["solution"])
+    if solution:
+        add_bold_paragraph(doc, "ارائه راه حل برای مشکل فنی موجود همراه با شرح دقیق و کافی و یکپارچه اختراع")
+        doc.add_paragraph(solution)
 
     # فرآیند تولید
-    bold_paragraph("شرح دقیق فرآیند تولید پاستا غنی‌شده با پودر برگ مورینگا اولیفرا")
-    for step_title, step_text in d["production_process"].items():
-        bold_paragraph(step_title)
-        doc.add_paragraph(step_text)
+    production_process = safe_get(d, ["production_process"], {})
+    if production_process:
+        add_bold_paragraph(doc, "شرح دقیق فرآیند تولید پاستا غنی‌شده با پودر برگ مورینگا اولیفرا")
+        for step_title, step_text in production_process.items():
+            if step_title:
+                add_bold_paragraph(doc, step_title)
+            if step_text:
+                doc.add_paragraph(step_text)
 
     # مزایا
-    bold_paragraph("بیان واضح و دقیق مزایای اختراع ادعایی نسبت به اختراعات پیشین")
-    for i, adv in enumerate(d["advantages"], 1):
-        doc.add_paragraph(f"{i}. {adv}")
+    advantages = safe_get(d, ["advantages"], [])
+    if advantages:
+        add_bold_paragraph(doc, "بیان واضح و دقیق مزایای اختراع ادعایی نسبت به اختراعات پیشین")
+        for i, adv in enumerate(advantages, 1):
+            doc.add_paragraph(f"{i}. {adv}")
 
     # کاربرد صنعتی
-    bold_paragraph("ذکر صریح کاربرد صنعتی اختراع")
-    doc.add_paragraph(d["industrial_application"])
+    industrial_app = safe_get(d, ["industrial_application"])
+    if industrial_app:
+        add_bold_paragraph(doc, "ذکر صریح کاربرد صنعتی اختراع")
+        doc.add_paragraph(industrial_app)
 
-    doc.save(output_path)
+    try:
+        doc.save(output_path)
+    except Exception as e:
+        print(f"خطا در ذخیره فایل: {e}")
 
 
 def claims_to_word(patent_json, output_path):
-    doc = Document()
+    doc = create_document()
 
-    section = doc.sections[0]
-    section.right_to_left = True
+    add_bold_paragraph(doc, "ادعانامه")
+    add_bold_paragraph(doc, "آنچه ادعا می‌شود:")
 
-    style = doc.styles['Normal']
-    style.font.name = 'B Nazanin'
-    style.font.size = Pt(12)
-
-    def bold_paragraph(text):
-        p = doc.add_paragraph()
-        r = p.add_run(text)
-        r.bold = True
-
-    # تیترها
-    bold_paragraph("ادعانامه")
-    bold_paragraph("آنچه ادعا می‌شود:")
-
-    claims = patent_json["patent_content"]["claims"]["items"]
+    claims = safe_get(patent_json, ["patent_content", "claims", "items"], [])
 
     for i, claim in enumerate(claims, 1):
         p = doc.add_paragraph()
         p.add_run(f"ادعای {i}) ").bold = True
         p.add_run(claim)
 
-    doc.save(output_path)
+    try:
+        doc.save(output_path)
+    except Exception as e:
+        print(f"خطا در ذخیره فایل: {e}")
