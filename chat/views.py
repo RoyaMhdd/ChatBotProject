@@ -73,16 +73,10 @@ class ChatHistoryAPIView(APIView):
 
             conversation_list = []
             for conversation in conversations:
-                first_message = conversation.messages.filter(
-                    role=Message.ROLE_USER
-                ).first()
                 
-                preview = first_message.content[:100] if first_message else "No messages"
-
                 conversation_list.append({
                     "id": conversation.id,
                     "title": conversation.title,
-                    "preview": preview,
                     "created_at": conversation.created_at.isoformat(),
                     "updated_at": conversation.updated_at.isoformat(),
                 })
@@ -295,7 +289,8 @@ class ChatAPIView(APIView):
                 logger.info(f"Updated conversation title to: {conversation.title}")
             else:
                 # No title found — just save last_form and updated_at
-                conversation.save(update_fields=['last_form', 'updated_at'])
+                conversation.title = "چت جدید"
+                conversation.save(update_fields=['last_form', 'title', 'updated_at'])
 
             logger.info(f"Message saved successfully for conversation {conversation.id}")
 
