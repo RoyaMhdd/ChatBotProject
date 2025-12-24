@@ -1140,7 +1140,7 @@
             div.className = "history-item";
             div.dataset.id = c.id;
             div.innerHTML =
-              `<img src='{% static "pen 3.png" %}' width="25" height="25">`+`<div class="history-title">${c.title || "گفتگو " + c.id}</div>` +
+              `<div class="history-title">${c.title || "گفتگو " + c.id}</div>` +
               `<div class="history-time">${new Date(
                 c.updated_at
               ).toLocaleString()}</div>`;
