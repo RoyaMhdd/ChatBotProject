@@ -15,6 +15,9 @@
         {% endif %}
         <a href="{% url 'options' %}">خانه</a>
         <a href="">خرید اشتراک</a>
+        {% if request.session.auth_token %}
+        <a href="{% url 'logout' %}">خروج</a>
+        {% endif %}
       </div>
       <div class="svg-header">
         <svg

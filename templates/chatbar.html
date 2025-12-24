@@ -322,7 +322,7 @@
         }
         .links {
           display: grid;
-
+          cursor: pointer;
           margin-top: 12px;
           color: #0b1d36;
           border-bottom: 1px solid #07243a;
@@ -456,20 +456,27 @@
                 />
               </svg>
             </span>
-            <p>میزان خلاقیت چت بات را انتخاب کنید!</p>
+            <p>نحوه تکمیل فرم ثبت اختراع توسط هوش مصنوعی</p>
           </div>
 
           <div class="modal-actions">
-            <button data-value="high">کم</button>
-            <button data-value="low">زیاد</button>
+            <button data-value="high">محدود (Strict)</button>
+            <button data-value="low">انعطاف‌پذیر (Assisted)</button>
           </div>
         </div>
 
         <!-- متن راهنما -->
         <div id="help-box" class="help-box">
-          با افزایش میزان خلاقیت، <br />چت‌بات در تغییر و تکمیل
-
-          <br />توضیحات شما در مورد <br />اختراعاتتان دسترسی بیشتری دارد.
+          <p class="limited">
+            حالت محدود: <br />
+            استفاده صرف از توضیحات ارائه‌شده توسط کاربر. مناسب برای زمانی که متن
+            نهایی از نظر حقوقی تأیید شده است.
+          </p>
+          <p class="unlimited">
+            حالت انعطاف‌پذیر:<br />
+            بازنویسی و تکمیل توضیحات با کمک هوش مصنوعی. مناسب برای اعمال تغییرات
+            جزئی، انسجام و کیفیت حقوقی متن.
+          </p>
         </div>
       </div>
 
@@ -632,7 +639,7 @@
         top: 120px;
         background: white;
         color: #333;
-        padding: 30px 15px;
+        padding: 0 15px;
         border-radius: 15px;
         width: 190px;
         display: none;
@@ -663,7 +670,7 @@
 
       .modal-actions button {
         margin: 10px;
-        padding: 12px 100px;
+        padding: 12px 30px;
         border-radius: 12px;
         border: none;
         cursor: pointer;
@@ -1062,6 +1069,9 @@
 
         window.loadHistory = loadHistory;
 
+        // pre-load history so sidebar has items available
+        loadHistory();
+
         // call loadCurrentConversation on first load so the chat area shows previous messages
         if (window.currentConversationId) loadCurrentConversation();
 
@@ -1089,6 +1099,8 @@
 
         document.getElementById("toolbar").style.display = "none"; // کل آیتم‌های sidebar مخفی
         submenu.style.display = "block"; // فقط تاریخچه دیده شود
+        // refresh history when opening the submenu
+        if (typeof loadHistory === 'function') loadHistory();
       }
 
       function searchItems(value) {
