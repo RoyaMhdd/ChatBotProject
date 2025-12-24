@@ -470,7 +470,7 @@
 
       function startResendTimer() {
         resendBtn.disabled = true;
-        timer = 60;
+        timer =  {{ remaining_seconds|default:0 }};
         resendTimer.textContent = timer;
         interval = setInterval(() => {
           timer--;

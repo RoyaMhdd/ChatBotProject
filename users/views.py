@@ -25,20 +25,35 @@ def Home(request):
 
 
 # ------------------  صفحه وارد کردن OTP  ------------------
+def get_otp_remaining_seconds(user):
+    otp = OTP.objects.filter(user=user).order_by('-created_at').first()
+    if not otp:
+        return 0
+    
+    remaining = int((otp.expires_at - timezone.now()).total_seconds())
+    return max(0, remaining)
 
 def verify(request):
     phone_number = request.GET.get('phone', '')
 
+    remaining_seconds = 0
+    if phone_number:
+        try:
+            user = User.objects.get(phone_number=phone_number)
+            remaining_seconds = get_otp_remaining_seconds(user)
+        except User.DoesNotExist:
+            remaining_seconds = 0
+
     response = render(request, 'code.html', {
-        'phone_number': phone_number
+        'phone_number': phone_number,
+        'remaining_seconds': remaining_seconds
     })
 
-    # جلوگیری از کش شدن صفحه
     response['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
     response['Pragma'] = 'no-cache'
     response['Expires'] = '0'
-
     return response
+
 
 
 # ------------------  ارسال OTP  ------------------
@@ -74,7 +89,7 @@ def send_otp(request):
     OTP.objects.filter(user=user).delete()
     # code = str(secrets.randbelow(9000) + 1000)
     code ="0000"
-    expires_at = timezone.now() + timedelta(minutes=5)
+    expires_at = timezone.now() + timedelta(minutes=1)
     OTP.objects.create(user=user, code=code, expires_at=expires_at)
 
     # ارسال پیامک
@@ -112,8 +127,6 @@ def verify_otp(request):
     if request.method != "POST":
         return JsonResponse({"error": "Method not allowed"}, status=405)
 
-    print("POST DATA:", request.POST)
-
     phone_number = request.POST.get("phone_number")
     d1 = request.POST.get("digit1")
     d2 = request.POST.get("digit2")
@@ -121,33 +134,51 @@ def verify_otp(request):
     d4 = request.POST.get("digit4")
 
     if not (phone_number and d1 and d2 and d3 and d4):
-        error="کد نامعتبر می باشد"
-        return render(request, "code.html", {"error": error})
+        error = "کد نامعتبر می باشد"
+        return render(request, "code.html", {
+            "error": error,
+            "phone_number": phone_number,
+        })
 
-
-    #  تبدیل درست RTL → LTR
     code = f"{d1}{d2}{d3}{d4}"[::-1]
-    print("corrected final code:", code)
 
     try:
         user = User.objects.get(phone_number=phone_number)
     except User.DoesNotExist:
-        return JsonResponse({"error": "User not found"}, status=404)
+        error = "کاربر پیدا نشد"
+        return render(request, "code.html", {
+            "error": error,
+            "phone_number": phone_number,
+        })
 
     otp = OTP.objects.filter(user=user).order_by('-created_at').first()
-    print("LAST OTP:", otp)
 
     if not otp:
         error = "کد یافت نشد"
-        return render(request, "code.html", {"error": error})
+        remaining_seconds = get_otp_remaining_seconds(user)
+        return render(request, "code.html", {
+            "error": error,
+            "phone_number": phone_number,
+            "remaining_seconds": remaining_seconds
+        })
 
     if otp.code != code:
         error = "کد معتبر نمی باشد"
-        return render(request, "code.html", {"error": error})
+        remaining_seconds = get_otp_remaining_seconds(user)
+        return render(request, "code.html", {
+            "error": error,
+            "phone_number": phone_number,
+            "remaining_seconds": remaining_seconds
+        })
 
     if not otp.is_valid():
         error = "کد منقضی شده"
-        return render(request, "code.html", {"error": error})
+        remaining_seconds = get_otp_remaining_seconds(user)
+        return render(request, "code.html", {
+            "error": error,
+            "phone_number": phone_number,
+            "remaining_seconds": remaining_seconds
+        })
 
     otp.delete()
 

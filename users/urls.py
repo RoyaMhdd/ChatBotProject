@@ -5,7 +5,7 @@ from .views import go_new_chat
 
 urlpatterns = [
     path('',views.MainPage,name='MainPage'),
-    path('home', views.Home, name='home'),
+    path('home/', views.Home, name='home'),
     path('send-otp', views.send_otp, name='send_otp'),
     path('verify/', views.verify, name='verify_page'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
@@ -22,7 +22,6 @@ urlpatterns = [
     path("gotochat/", go_new_chat, name="gotochat"),
     path("logout/", views.logout_view, name="logout"),
     path("clearsession/", views.clear_session, name="clearsession"),
-
 
 ]
 
