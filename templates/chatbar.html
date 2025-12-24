@@ -1062,6 +1062,9 @@
 
         window.loadHistory = loadHistory;
 
+        // pre-load history so sidebar has items available
+        loadHistory();
+
         // call loadCurrentConversation on first load so the chat area shows previous messages
         if (window.currentConversationId) loadCurrentConversation();
 
@@ -1089,6 +1092,8 @@
 
         document.getElementById("toolbar").style.display = "none"; // کل آیتم‌های sidebar مخفی
         submenu.style.display = "block"; // فقط تاریخچه دیده شود
+        // refresh history when opening the submenu
+        if (typeof loadHistory === 'function') loadHistory();
       }
 
       function searchItems(value) {
