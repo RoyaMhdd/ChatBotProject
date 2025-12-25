@@ -22,17 +22,25 @@ logger = logging.getLogger(__name__)
 
 from .promts2 import INVENTION_PROMPTS
 
-def load_prompt_v2(invention_type: str, mode: str) -> str:
-    filename = f"{invention_type}_{mode}.txt"  # نام فایل مطابق جدول بالا
-    filepath = os.path.join(settings.BASE_DIR, "prompts", filename)
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Prompt file not found: {filepath}")
-    with open(filepath, "r", encoding="utf-8") as f:
-        content = f.read().strip()
-    if not content:
-        raise ValueError(f"Prompt file is empty: {filepath}")
-    return content
-#
+
+
+# roys load
+# def load_prompt_v2(invention_type: str, mode: str) -> str:
+#     filename = f"{invention_type}_{mode}.txt"  # نام فایل مطابق جدول بالا
+#     filepath = os.path.join(settings.BASE_DIR, "prompts", filename)
+#     if not os.path.exists(filepath):
+#         raise FileNotFoundError(f"Prompt file not found: {filepath}")
+#     with open(filepath, "r", encoding="utf-8") as f:
+#         content = f.read().strip()
+#     if not content:
+#         raise ValueError(f"Prompt file is empty: {filepath}")
+#     return content
+# #
+
+
+
+
+# armila
 # def load_prompt(invention_type: str) -> str:
 #     """
 #     یک فایل پرامپت را بر اساس نوع اختراع (process/product/hybrid) می‌خواند.
