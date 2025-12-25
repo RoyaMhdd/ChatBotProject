@@ -64,8 +64,14 @@ class ChatHistoryAPIView(APIView):
         try:
             user = request.user if hasattr(request.user, 'id') and request.user.id else None
             
+            # Only return conversations owned by this user that have at least one user-sent message
             if user:
-                conversations = Conversation.objects.filter(user=user).order_by('-updated_at')
+                conversations = (
+                    Conversation.objects
+                    .filter(user=user, messages__role=Message.ROLE_USER)
+                    .distinct()
+                    .order_by('-updated_at')
+                )
             else:
                 conversations = Conversation.objects.none()
 

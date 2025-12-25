@@ -1041,6 +1041,10 @@
               `<div class="history-time">${new Date(
                 c.updated_at
               ).toLocaleString()}</div>`;
+            // store current title for cancel/revert
+            const titleElem = div.querySelector('.history-title');
+            if (titleElem) titleElem.dataset.title = c.title || "";
+
             const editIcon = div.querySelector(".edit-icon");
             editIcon.addEventListener("click", function editHandler(e) {
               e.stopPropagation();
@@ -1055,21 +1059,40 @@
               titleDiv.appendChild(input);
               input.focus();
 
-              input.addEventListener("keydown", (e) => {
-                if (e.key === "Enter") {
-                  titleDiv.dataset.title = input.value;
-
-                  titleDiv.innerHTML = `
-                  <span>${input.value}</span>
-                  <img src="${PEN_ICON_URL}" class="history-icon edit-icon" />
-                `;
-
-                  titleDiv
-                    .querySelector(".edit-icon")
-                    .addEventListener("click", editHandler);
+              input.addEventListener("keydown", async (evt) => {
+                if (evt.key === "Enter") {
+                  const newTitle = input.value.trim();
+                  if (!newTitle) {
+                    alert("عنوان نمی‌تواند خالی باشد");
+                    return;
+                  }
+                  try {
+                    // persist to backend
+                    const data = await updateConversationTitle(c.id, newTitle);
+                    // Update local item
+                    titleDiv.dataset.title = data.title || newTitle;
+                    titleDiv.innerHTML = `
+                      <span>${data.title || newTitle}</span>
+                      <img src="${PEN_ICON_URL}" class="history-icon edit-icon" />
+                    `;
+                    titleDiv
+                      .querySelector(".edit-icon")
+                      .addEventListener("click", editHandler);
+                  } catch (err) {
+                    console.error("Error updating title:", err);
+                    alert("خطا در به‌روزرسانی عنوان");
+                    // revert to previous
+                    titleDiv.innerHTML = `
+                      <span>${titleDiv.dataset.title}</span>
+                      <img src="${PEN_ICON_URL}" class="history-icon edit-icon" />
+                    `;
+                    titleDiv
+                      .querySelector(".edit-icon")
+                      .addEventListener("click", editHandler);
+                  }
                 }
 
-                if (e.key === "Escape") {
+                if (evt.key === "Escape") {
                   titleDiv.innerHTML = `
                   <span>${titleDiv.dataset.title}</span>
                   <img src="${PEN_ICON_URL}" class="history-icon edit-icon" />
@@ -1121,6 +1144,11 @@
             document.querySelectorAll(".history-item").forEach((el) => {
               el.classList.toggle("active", el.dataset.id == id);
             });
+
+            // update browser page title (no layout change) so current title is visible
+            if (data.conversation_title) {
+              document.title = data.conversation_title + ' - چت بات';
+            }
           } catch (err) {
             console.error("loadCurrentConversation error:", err);
           }
@@ -1133,6 +1161,38 @@
 
         // call loadCurrentConversation on first load so the chat area shows previous messages
         if (window.currentConversationId) loadCurrentConversation();
+
+        async function updateConversationTitle(conversationId, title) {
+          try {
+            const res = await fetch(`/chat/api/conversation/${conversationId}/title/`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCSRF(),
+              },
+              body: JSON.stringify({ title }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to update title");
+
+            // update local history cache and re-render
+            const idx = (window.historyData || []).findIndex((h) => h.id == conversationId);
+            if (idx !== -1) {
+              window.historyData[idx].title = data.title;
+              renderHistory(window.historyData);
+            } else {
+              // fallback reload
+              loadHistory();
+            }
+
+            // update browser page title as well
+            if (data.title) document.title = data.title + ' - چت بات';
+            return data;
+          } catch (err) {
+            console.error("updateConversationTitle error", err);
+            throw err;
+          }
+        }
 
         function getCSRF() {
           const cookieValue = document.cookie
