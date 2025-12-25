@@ -18,58 +18,43 @@ from django.http import FileResponse, Http404
 
 logger = logging.getLogger(__name__)
 
+def load_prompt(invention_type: str) -> str:
+    """
+    یک فایل پرامپت را بر اساس نوع اختراع (process/product/hybrid) می‌خواند.
+    اگر فایل پیدا نشود یا خالی باشد، خطا raise می‌کند.
+    """
 
+    # نوع‌های مجاز
+    valid_types = {"process", "product", "hybrid"}
+    if invention_type not in valid_types:
+        # نوع اختراع اشتباه یا ناشناخته
+        raise ValueError(f"Invalid invention_type: {invention_type}")
 
-from .promts2 import INVENTION_PROMPTS
+    # نام فایل بر اساس نوع اختراع
+    filename = f"{invention_type}.txt"  # مثلاً process.txt
 
-def load_prompt_v2(invention_type: str, mode: str) -> str:
-    filename = f"{invention_type}_{mode}.txt"  # نام فایل مطابق جدول بالا
-    filepath = os.path.join(settings.BASE_DIR, "prompts", filename)
+    # مسیر پوشه prompts (در کنار manage.py)
+    prompts_dir = os.path.join(settings.BASE_DIR, "prompts")
+    filepath = os.path.join(prompts_dir, filename)
+
+    # اگر فایل وجود نداشت
     if not os.path.exists(filepath):
         raise FileNotFoundError(f"Prompt file not found: {filepath}")
-    with open(filepath, "r", encoding="utf-8") as f:
-        content = f.read().strip()
-    if not content:
-        raise ValueError(f"Prompt file is empty: {filepath}")
-    return content
-#
-# def load_prompt(invention_type: str) -> str:
-#     """
-#     یک فایل پرامپت را بر اساس نوع اختراع (process/product/hybrid) می‌خواند.
-#     اگر فایل پیدا نشود یا خالی باشد، خطا raise می‌کند.
-#     """
-#
-#     # نوع‌های مجاز
-#     valid_types = {"process", "product", "hybrid"}
-#     if invention_type not in valid_types:
-        # نوع اختراع اشتباه یا ناشناخته
-        # raise ValueError(f"Invalid invention_type: {invention_type}")
 
-    # # نام فایل بر اساس نوع اختراع
-    # filename = f"{invention_type}.txt"  # مثلاً product_restricted.txt
-    #
-    # # مسیر پوشه prompts (در کنار manage.py)
-    # prompts_dir = os.path.join(settings.BASE_DIR, "prompts")
-    # filepath = os.path.join(prompts_dir, filename)
-    #
-    # # اگر فایل وجود نداشت
-    # if not os.path.exists(filepath):
-    #     raise FileNotFoundError(f"Prompt file not found: {filepath}")
-    #
-    # # خواندن محتوا
-    # try:
-    #     with open(filepath, "r", encoding="utf-8") as f:
-    #         content = f.read().strip()
-    # except Exception as e:
+    # خواندن محتوا
+    try:
+        with open(filepath, "r", encoding="utf-8") as f:
+            content = f.read().strip()
+    except Exception as e:
         # هر خطای غیرمنتظره هنگام خواندن فایل
-    #     raise RuntimeError(f"Error reading prompt file: {str(e)}")
-    #
-    # if not content:
-    #     # فایل خالی
-    #     raise ValueError(f"Prompt file is empty: {filepath}")
-    #
-    # return content
-    #
+        raise RuntimeError(f"Error reading prompt file: {str(e)}")
+
+    if not content:
+        # فایل خالی
+        raise ValueError(f"Prompt file is empty: {filepath}")
+
+    return content
+
 
 
 class ChatHistoryAPIView(APIView):
@@ -182,9 +167,7 @@ class ChatAPIView(APIView):
             # --- بارگذاری system prompt بر اساس نوع اختراع مکالمه ---
             try:
                 invention_type = conversation.invention_type  # مثلا "process" یا "product" یا "hybrid"
-                # system_prompt = load_prompt(invention_type)
-                system_prompt = load_prompt_v2(conversation.invention_type, request.data.get("mode", "restricted"))
-
+                system_prompt = load_prompt(invention_type)
             except FileNotFoundError as e:
                 logger.error(f"Prompt file not found: {str(e)}")
                 return Response(
