@@ -490,6 +490,7 @@
           </p>
         </div>
       </div>
+      -->
 
       <div class="chat-main" id="chatWindow">
         <div id="user-chat">
@@ -1212,41 +1213,36 @@
         submenu.style.display = "none"; // تاریخچه بسته شود
         document.getElementById("toolbar").style.display = "block"; // منوی اصلی برگردد
       }
-      let creativity = null;
-      document.getElementById("menuToggle").classList.add("disabled");
+      // let creativity = null;
+      // document.getElementById("menuToggle").classList.add("disabled");
 
-      document.querySelectorAll(".modal-actions button").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          creativity = btn.dataset.value;
-          fetch("/set-creativity/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ creativity }),
-          });
+      // document.querySelectorAll(".modal-actions button").forEach((btn) => {
+      //   btn.addEventListener("click", () => {
+      //     creativity = btn.dataset.value;
 
-          // حذف overlay
-          document.getElementById("creativity-overlay").style.display = "none";
+      //     // حذف overlay
+      //     document.getElementById("creativity-overlay").style.display = "none";
 
-          // فعال کردن چت
-          const chat = document.getElementById("box");
-          chat.style.pointerEvents = "auto";
-          chat.style.filter = "none";
-          const chat1 = document.getElementById("chatWindow");
-          chat1.style.pointerEvents = "auto";
-          chat1.style.filter = "none";
-          document.getElementById("menuToggle").classList.remove("disabled");
+      //     // فعال کردن چت
+      //     const chat = document.getElementById("box");
+      //     chat.style.pointerEvents = "auto";
+      //     chat.style.filter = "none";
+      //     const chat1 = document.getElementById("chatWindow");
+      //     chat1.style.pointerEvents = "auto";
+      //     chat1.style.filter = "none";
+      //     document.getElementById("menuToggle").classList.remove("disabled");
 
-          // ذخیره انتخاب (اختیاری)
-          localStorage.setItem("creativity", creativity);
-        });
-      });
-      const helpIcon = document.getElementById("help-icon");
-      const helpBox = document.getElementById("help-box");
+      //     // ذخیره انتخاب (اختیاری)
+      //     localStorage.setItem("creativity", creativity);
+      //   });
+      // });
+      // const helpIcon = document.getElementById("help-icon");
+      // const helpBox = document.getElementById("help-box");
 
-      helpIcon.addEventListener("click", () => {
-        helpBox.style.display =
-          helpBox.style.display === "block" ? "none" : "block";
-      });
+      // helpIcon.addEventListener("click", () => {
+      //   helpBox.style.display =
+      //     helpBox.style.display === "block" ? "none" : "block";
+      // });
     </script>
   </body>
 </html>
