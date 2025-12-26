@@ -9,10 +9,12 @@ from .models import Conversation, Message
 import os
 from django.conf import settings
 from .Services.WordExporter import  claims_to_word, description_to_word, summary_to_word
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 import json
 import zipfile
 from django.http import FileResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
+
 
 
 
@@ -469,3 +471,52 @@ def download_invention_zip(request, conversation_id):
     except Conversation.DoesNotExist:
         raise Http404("مکالمه یافت نشد")
 
+
+
+@csrf_exempt
+def set_creativity(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "Invalid method"}, status=405)
+
+    try:
+        data = json.loads(request.body)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+
+    creativity = data.get("creativity")
+    if creativity is None:
+        return JsonResponse({"error": "creativity missing"}, status=400)
+
+    # تبدیل مقدار به Boolean
+    if isinstance(creativity, bool):
+        details_value = creativity
+    elif isinstance(creativity, str):
+        if creativity.lower() in ["flexible", "true", "1"]:
+            details_value = True
+        elif creativity.lower() in ["limited", "false", "0"]:
+            details_value = False
+        else:
+            return JsonResponse({"error": "Invalid creativity value"}, status=400)
+    elif isinstance(creativity, int):
+        details_value = bool(creativity)
+    else:
+        return JsonResponse({"error": "Invalid creativity type"}, status=400)
+
+    # گرفتن آخرین conversation
+    user = request.user if hasattr(request.user, "id") and request.user.id else None
+
+    if user:
+        conversation = Conversation.objects.filter(user=user).order_by("-created_at").first()
+    else:
+        conversation = Conversation.objects.order_by("-created_at").first()
+
+    if not conversation:
+        return JsonResponse({"error": "No active conversation"}, status=404)
+
+    conversation.details = details_value
+    conversation.save(update_fields=["details"])
+
+    return JsonResponse({
+        "success": True,
+        "details": conversation.details
+    })
