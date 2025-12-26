@@ -174,7 +174,8 @@ class ChatAPIView(APIView):
             # --- بارگذاری system prompt بر اساس نوع اختراع مکالمه ---
             try:
                 invention_type = conversation.invention_type  # مثلا "process" یا "product" یا "hybrid"
-                system_prompt = load_prompt(invention_type)
+                details = conversation.details
+                system_prompt = load_prompt(invention_type, details)
             except FileNotFoundError as e:
                 logger.error(f"Prompt file not found: {str(e)}")
                 return Response(
