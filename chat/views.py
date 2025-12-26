@@ -20,43 +20,42 @@ from django.views.decorators.csrf import csrf_exempt
 
 logger = logging.getLogger(__name__)
 
-def load_prompt(invention_type: str) -> str:
+def load_prompt(invention_type: str, details: bool) -> str:
     """
-    یک فایل پرامپت را بر اساس نوع اختراع (process/product/hybrid) می‌خواند.
-    اگر فایل پیدا نشود یا خالی باشد، خطا raise می‌کند.
+    فایل پرامپت را بر اساس invention_type و details می‌خواند.
+
+    details=False  => non_generative
+    details=True   => generative
     """
 
-    # نوع‌های مجاز
     valid_types = {"process", "product", "hybrid"}
     if invention_type not in valid_types:
-        # نوع اختراع اشتباه یا ناشناخته
-        raise ValueError(f"Invalid invention_type: {invention_type}")
+        raise ValueError(
+            f"Invalid invention_type: {invention_type}. Must be one of {sorted(valid_types)}"
+        )
 
-    # نام فایل بر اساس نوع اختراع
-    filename = f"{invention_type}.txt"  # مثلاً process.txt
+    suffix = "generative" if details else "non_generative"
+    filename = f"{invention_type}_{suffix}.txt"
 
-    # مسیر پوشه prompts (در کنار manage.py)
     prompts_dir = os.path.join(settings.BASE_DIR, "prompts")
     filepath = os.path.join(prompts_dir, filename)
 
-    # اگر فایل وجود نداشت
     if not os.path.exists(filepath):
-        raise FileNotFoundError(f"Prompt file not found: {filepath}")
+        raise FileNotFoundError(
+            f"Prompt file not found: {filepath} "
+            f"(expected filename: {filename} in prompts dir: {prompts_dir})"
+        )
 
-    # خواندن محتوا
     try:
         with open(filepath, "r", encoding="utf-8") as f:
             content = f.read().strip()
     except Exception as e:
-        # هر خطای غیرمنتظره هنگام خواندن فایل
-        raise RuntimeError(f"Error reading prompt file: {str(e)}")
+        raise RuntimeError(f"Error reading prompt file {filepath}: {e}")
 
     if not content:
-        # فایل خالی
         raise ValueError(f"Prompt file is empty: {filepath}")
 
     return content
-
 
 
 class ChatHistoryAPIView(APIView):
