@@ -59,52 +59,68 @@ Now your environment is ready to work on Patent Project.
 You can open the project in PyCharm and set the interpreter to use the .venv folder.
 
 ---
+# 🧠 AI System Prompts Configuration
 
-### 🧠 AI System Prompts Configuration
+This project uses external system prompt files to control the behavior of the AI assistant.  
+Prompt files are intentionally excluded from the repository and must be created locally on each environment (developer machine or server).
 
-This project uses external system prompt files to control the behavior of the AI assistant.
-These prompts are not stored in the repository by design and must be created locally on each environment (developer machine or server).
+The system dynamically selects one of six prompt variants based on:
 
-1️⃣ Create the prompts/ directory
+- invention_type (process, product, hybrid)
+- details flag (true / false)
 
-At the project root (the same level as manage.py), create a folder named:
+## 1️⃣ Create the `prompts/` Directory
 
-prompts/
+At the project root (same level as `manage.py`), create a directory named:
+
+`prompts/`
+
+Expected project structure:
+
+ChatBotProject/  
+├─ manage.py  
+├─ app/  
+├─ prompts/  
+│  ├─ process_generative.txt  
+│  ├─ process_non_generative.txt  
+│  ├─ product_generative.txt  
+│  ├─ product_non_generative.txt  
+│  ├─ hybrid_generative.txt  
+│  ├─ hybrid_non_generative.txt  
+
+### Note
+The `prompts/` directory is listed in `.gitignore` to ensure prompt contents are never committed to the repository.
+
+## 2️⃣ Create Prompt Files (6 Variants)
+
+Inside the `prompts/` directory, create the following six UTF-8 encoded text files:
+
+- process_generative.txt  
+- process_non_generative.txt  
+- product_generative.txt  
+- product_non_generative.txt  
+- hybrid_generative.txt  
+- hybrid_non_generative.txt  
+
+Each file must contain the complete system-level instructions for the AI assistant.
+
+## 3️⃣ Prompt Selection Logic
+
+The backend dynamically loads the appropriate system prompt according to the following logic:
+
+| invention_type | details | Loaded prompt file              |
+|----------------|---------|----------------------------------|
+| process        | false   | process_non_generative.txt       |
+| process        | true    | process_generative.txt           |
+| product        | false   | product_non_generative.txt       |
+| product        | true    | product_generative.txt           |
+| hybrid         | false   | hybrid_non_generative.txt        |
+| hybrid         | true    | hybrid_generative.txt            |
+
+This structure keeps prompt management modular, scalable, and environment-specific, while allowing precise control over AI behavior.
 
 
-Your project structure should look like:
-
-ChatBotProject/
-├─ manage.py
-├─ app/
-├─ prompts/
-│  ├─ process.txt
-│  ├─ product.txt
-│  ├─ hybrid.txt
-
-
-Note: prompts/ is intentionally included in .gitignore so prompt contents are never pushed to the repository.
-
-2️⃣ Create prompt files for each invention type
-
-Inside the prompts/ directory, create three UTF-8 text files:
-
-prompts/
-  process.txt
-  product.txt
-  hybrid.txt
-
-
-Each file must contain the full system-level instructions for the AI agent associated with its invention type:
-
-process.txt → System prompt for Process inventions
-
-product.txt → System prompt for Product inventions
-
-hybrid.txt → System prompt for Hybrid (Process + Product) inventions
-
-These system prompts are dynamically loaded by the backend for each chat request and determine the AI behavior accordingly.
-
+---
 
 ### 🧠 Notes
 
