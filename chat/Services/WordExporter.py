@@ -12,25 +12,24 @@ def create_doc_style(doc):
     style.font.size = Pt(12)
     return doc
 
-
 def summary_to_word(patent_json, output_path):
     doc = Document()
     create_doc_style(doc)
 
-    # تیتر خلاصه
-    p = doc.add_paragraph("خلاصه اختراع:")
+
+    p = doc.add_paragraph(":  خلاصه اختراع")
     p.runs[0].bold = True
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
-    # عنوان اختراع
+
     title = patent_json.get("patent_content", {}).get("invention_title")
-    p = doc.add_paragraph(f"عنوان اختراع: {title if title else 'ارائه نشده'}")
+    p = doc.add_paragraph(f"عنوان اختراع: {title or 'ارائه نشده'}")
     p.runs[0].bold = True
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
-    # متن خلاصه داخل براکت
+
     abstract = patent_json.get("patent_content", {}).get("abstract", {}).get("text")
-    p = doc.add_paragraph(f"{abstract if abstract else 'ارائه نشده'}")
+    p = doc.add_paragraph(abstract or "ارائه نشده")
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
     doc.save(output_path)
@@ -41,80 +40,180 @@ def description_to_word(patent_json, output_path):
     create_doc_style(doc)
 
     def add_bold_paragraph(text):
-        p = doc.add_paragraph(text)
+        doc.add_paragraph()
+        p = doc.add_paragraph()
+        run = p.add_run(text)
+        run.bold = True
         p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-        p.runs[0].bold = True
+        p.paragraph_format.right_to_left = True
         return p
 
-    d = patent_json.get("patent_content", {}).get("description", {})
-    title = patent_json.get("patent_content", {}).get("invention_title")
+    content = patent_json.get("patent_content", {})
+    description = content.get("description", {})
+    doc_type = patent_json.get("document_type", "")
 
-    add_bold_paragraph("توصیف اختراع")
-    add_bold_paragraph("عنوان اختراع (به گونه ای که در اظهارنامه ذکر گردیده است)")
-    p = doc.add_paragraph(f"{title if title else 'ارائه نشده'}")
+
+    add_bold_paragraph(": توصیف اختراع")
+    add_bold_paragraph(": عنوان اختراع به گونه‌ای که در اظهارنامه ذکر گردیده است")
+
+
+    title = content.get("invention_title", "")
+    p = doc.add_paragraph()
+    run = p.add_run(title or "ارائه نشده")
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.paragraph_format.right_to_left = True
 
-    technical_field = d.get("technical_field", "ارائه نشده")
-    add_bold_paragraph("زمینه فنی اختراع مربوط")
-    p = doc.add_paragraph(f"{technical_field}")
+
+    add_bold_paragraph(": زمینه فنی اختراع مربوط")
+    p = doc.add_paragraph()
+    run = p.add_run(description.get("technical_field", "ارائه نشده"))
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.paragraph_format.right_to_left = True
 
-    technical_problem = d.get("technical_problem", [])
-    objectives = d.get("objectives", [])
-    add_bold_paragraph("مشکل فنی و بیان اهداف اختراع")
-    if technical_problem:
-        add_bold_paragraph("مشکل فنی:")
-        for i, item in enumerate(technical_problem, 1):
-            p = doc.add_paragraph(f"{i}. {item}")
-            p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    else:
-        p = doc.add_paragraph("ارائه نشده")
+
+    add_bold_paragraph(": مشکل فنی و بیان اهداف اختراع")
+    p = doc.add_paragraph()
+    run = p.add_run(description.get("technical_problem_and_objectives", "ارائه نشده"))
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.paragraph_format.right_to_left = True
+
+
+    add_bold_paragraph(": شرح وضعیت دانش پیشین و سابقه پیشرفت‌های مرتبط")
+    p = doc.add_paragraph()
+    run = p.add_run(description.get("prior_art_and_background", "ارائه نشده"))
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.paragraph_format.right_to_left = True
+
+
+    add_bold_paragraph(": ارائه راه‌حل و شرح دقیق اختراع")
+    text = description.get("solution_and_detailed_description") or \
+           description.get("technical_solution", "") + (
+               "\n" + description.get("detailed_description", "") if description.get("detailed_description") else "")
+    p = doc.add_paragraph()
+    run = p.add_run(text or "ارائه نشده")
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.paragraph_format.right_to_left = True
+
+
+    hybrid_expl = description.get("hybrid_structure_explanation")
+    if hybrid_expl:
+        add_bold_paragraph(": توضیح ساختار ترکیبی")
+        p = doc.add_paragraph()
+        run = p.add_run(hybrid_expl)
         p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        p.paragraph_format.right_to_left = True
 
-    if objectives:
-        add_bold_paragraph("بیان اهداف اختراع:")
-        for i, item in enumerate(objectives, 1):
-            p = doc.add_paragraph(f"{i}. {item}")
+
+    process_steps = []
+    process_conditions = ""
+    materials = ""
+    equipment = ""
+
+    if doc_type.startswith("process"):
+        process_steps = description.get("process_steps", [])
+        process_conditions = description.get("process_conditions", "")
+        materials = description.get("materials_and_inputs", "")
+        equipment = description.get("equipment_used", "")
+    elif doc_type == "hybrid":
+        process_specific = content.get("process_specific", {})
+        process_steps = process_specific.get("process_stage_sequence", [])
+        process_conditions = process_specific.get("operational_conditions", "")
+        materials = process_specific.get("required_materials_and_inputs", "")
+        equipment = process_specific.get("tools_and_systems_used", "")
+        gen_proc = process_specific.get("process_general_description", "")
+        if gen_proc:
+            add_bold_paragraph(": توصیف کلی فرآیند")
+            p = doc.add_paragraph()
+            run = p.add_run(gen_proc)
             p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    else:
-        p = doc.add_paragraph("ارائه نشده")
+            p.paragraph_format.right_to_left = True
+
+    if process_steps:
+        add_bold_paragraph(": شرح مراحل فرآیند تولید")
+        for idx, step in enumerate(process_steps, 1):
+            if isinstance(step, str):
+                p = doc.add_paragraph()
+                run = p.add_run(f"{idx}. {step}")
+                p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                p.paragraph_format.right_to_left = True
+            elif isinstance(step, dict):
+                num = step.get("step_number", idx)
+                title = step.get("title", "")
+                desc = step.get("description", "")
+
+                p = doc.add_paragraph()
+                run = p.add_run(f"{num}. {title}")
+                p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                p.paragraph_format.right_to_left = True
+
+                if desc:
+                    p = doc.add_paragraph()
+                    run = p.add_run(desc)
+                    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                    p.paragraph_format.right_to_left = True
+    elif doc_type in ["process", "hybrid"]:
+        p = doc.add_paragraph()
+        run = p.add_run("ارائه نشده")
         p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        p.paragraph_format.right_to_left = True
 
-    prior_art = d.get("prior_art", "ارائه نشده")
-    add_bold_paragraph("شرح وضعیت دانش پیشین و سابقه پیشرفت هایی که در ارتباط با اختراع ادعایی وجود دارد")
-    p = doc.add_paragraph(f"{prior_art}")
-    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    if any([process_conditions, materials, equipment]):
+        add_bold_paragraph(": شرایط فرآیند و مواد/تجهیزات")
+        p = doc.add_paragraph()
+        run = p.add_run(
+            f"شرایط فرآیند: {process_conditions or 'ارائه نشده'}\n"
+            f"مواد: {materials or 'ارائه نشده'}\n"
+            f"تجهیزات: {equipment or 'ارائه نشده'}"
+        )
+        p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        p.paragraph_format.right_to_left = True
 
-    solution = d.get("solution", "ارائه نشده")
-    add_bold_paragraph("ارائه راه حل برای مشکل فنی موجود همراه با شرح دقیق و کافی و یکپارچه اختراع")
-    p = doc.add_paragraph(f"{solution}")
-    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
 
-    production_process = d.get("production_process", {})
-    add_bold_paragraph("شرح دقیق فرآیند تولید")
-    if production_process:
-        for step_title, step_text in production_process.items():
-            add_bold_paragraph(step_title)
-            p = doc.add_paragraph(f"{step_text}")
+    product_specific = content.get("product_specific", {})
+    if product_specific:
+        gen_desc = product_specific.get("product_general_description", "")
+        internal_arch = product_specific.get("product_internal_architecture", "")
+        elements = product_specific.get("product_elements_list", [])
+        if any([gen_desc, internal_arch, elements]):
+            add_bold_paragraph(": مشخصات محصول")
+            p = doc.add_paragraph()
+            run = p.add_run(f"توصیف کلی محصول: {gen_desc or 'ارائه نشده'}")
             p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    else:
-        p = doc.add_paragraph("ارائه نشده")
-        p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+            p.paragraph_format.right_to_left = True
 
-    advantages = d.get("advantages", [])
-    add_bold_paragraph("بیان واضح و دقیق مزایای اختراع ادعایی نسبت به اختراعات پیشین")
-    if advantages:
-        for i, adv in enumerate(advantages, 1):
-            p = doc.add_paragraph(f"{i}. {adv}")
+            p = doc.add_paragraph()
+            run = p.add_run(f"ساختار داخلی محصول: {internal_arch or 'ارائه نشده'}")
             p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-    else:
-        p = doc.add_paragraph("ارائه نشده")
-        p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+            p.paragraph_format.right_to_left = True
 
-    industrial_application = d.get("industrial_application", "ارائه نشده")
-    add_bold_paragraph("ذکر صریح کاربرد صنعتی اختراع")
-    p = doc.add_paragraph(f"{industrial_application}")
+            if elements:
+                add_bold_paragraph(": عناصر و اجزاء محصول")
+                for idx, el in enumerate(elements, 1):
+                    p = doc.add_paragraph()
+                    run = p.add_run(f"{idx}. {el}")
+                    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+                    p.paragraph_format.right_to_left = True
+
+
+    add_bold_paragraph(": مثال اجرایی اختراع")
+    p = doc.add_paragraph()
+    run = p.add_run(description.get("implementation_examples", "ارائه نشده"))
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.paragraph_format.right_to_left = True
+
+
+    add_bold_paragraph(": مزایای اختراع نسبت به دانش پیشین")
+    p = doc.add_paragraph()
+    run = p.add_run(description.get("advantages_over_prior_art", "ارائه نشده"))
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.paragraph_format.right_to_left = True
+
+
+    add_bold_paragraph(": کاربرد صنعتی اختراع")
+    p = doc.add_paragraph()
+    run = p.add_run(description.get("industrial_applicability", "ارائه نشده"))
+    p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    p.paragraph_format.right_to_left = True
 
     doc.save(output_path)
 
@@ -124,21 +223,27 @@ def claims_to_word(patent_json, output_path):
     create_doc_style(doc)
 
     def add_bold_paragraph(text):
-        p = doc.add_paragraph(text)
+        p = doc.add_paragraph()
+        run = p.add_run(text)
+        run.bold = True
         p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-        p.runs[0].bold = True
+        p.paragraph_format.right_to_left = True
         return p
 
     add_bold_paragraph("ادعانامه")
-    add_bold_paragraph("آنچه ادعا می‌شود:")
+    add_bold_paragraph(": آنچه ادعا می‌شود")
 
-    claims = patent_json.get("patent_content", {}).get("claims", {}).get("items", [])
+    claims_data = patent_json.get("patent_content", {}).get("claims", {})
+    claims = claims_data.get("independent_claims", []) + claims_data.get("dependent_claims", [])
+
     if claims:
-        for i, claim in enumerate(claims, 1):
-            p = doc.add_paragraph(f"[ادعای {i}) {claim}]")
+        for idx, claim in enumerate(claims, 1):
+            p = doc.add_paragraph(f"ادعای {idx} {claim}")
             p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+            p.paragraph_format.right_to_left = True
     else:
         p = doc.add_paragraph("ارائه نشده")
         p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+        p.paragraph_format.right_to_left = True
 
     doc.save(output_path)

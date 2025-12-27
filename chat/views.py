@@ -487,7 +487,7 @@ def set_creativity(request):
     if creativity is None:
         return JsonResponse({"error": "creativity missing"}, status=400)
 
-    # تبدیل مقدار به Boolean
+
     if isinstance(creativity, bool):
         details_value = creativity
     elif isinstance(creativity, str):
