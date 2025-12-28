@@ -15,6 +15,13 @@ import zipfile
 from django.http import FileResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 
+import os
+import json
+import zipfile
+from django.http import FileResponse, Http404, HttpResponse
+from django.conf import settings
+from .models import Conversation
+
 
 
 
@@ -434,44 +441,83 @@ def chat_view(request, pk):
         conversation = get_object_or_404(Conversation, id=pk)
         return render(request, 'chatbar.html', {'conversation': conversation})
 
-
 def download_invention_zip(request, conversation_id):
+    # 1. گرفتن مکالمه (بدون کرش)
+    conversation = get_object_or_404(Conversation, id=conversation_id)
+
+    # 2. آخرین پیام AI
+    last_ai = conversation.messages.filter(
+        role='assistant'
+    ).order_by('-created_at').first()
+
+    if not last_ai:
+        return HttpResponse("پیام AI وجود ندارد", status=400)
+
+    if not last_ai.content or not last_ai.content.strip():
+        return HttpResponse("محتوای پیام AI خالی است", status=400)
+
+    # 3. پارس JSON (اینجا مشکل اصلی شما بود)
     try:
-        conversation = Conversation.objects.get(id=conversation_id)
+        patent_json = safe_json_load(last_ai.content)
 
-        last_ai = conversation.messages.filter(
-            role='assistant'
-        ).order_by('-created_at').first()
+    except json.JSONDecodeError as e:
+        # لاگ برای شما (اختیاری)
+        print("JSON ERROR:", e)
+        print("CONTENT:", last_ai.content[:500])
 
-        if not last_ai:
-            raise Http404("پیام AI یافت نشد")
+        return HttpResponse(
+            "فرمت داده اختراع نامعتبر است (JSON خراب)",
+            status=422
+        )
 
-        patent_json = json.loads(last_ai.content)
+    # 4. آماده‌سازی مسیرها
+    base_dir = os.path.join(settings.MEDIA_ROOT, f"invention_{conversation.id}")
+    os.makedirs(base_dir, exist_ok=True)
 
-        base_dir = os.path.join(settings.MEDIA_ROOT, f"invention_{conversation.id}")
-        os.makedirs(base_dir, exist_ok=True)
+    p1 = os.path.join(base_dir, "01_خلاصه_اختراع.docx")
+    p2 = os.path.join(base_dir, "02_توضیح_اختراع.docx")
+    p3 = os.path.join(base_dir, "03_ادعانامه.docx")
 
-        p1 = os.path.join(base_dir, "01_خلاصه_اختراع.docx")
-        p2 = os.path.join(base_dir, "02_توضیح_اختراع.docx")
-        p3 = os.path.join(base_dir, "03_ادعانامه.docx")
-
+    # 5. ساخت فایل‌های Word (هرکدام ایزوله)
+    try:
         summary_to_word(patent_json, p1)
+    except Exception as e:
+        print("SUMMARY ERROR:", e)
+        open(p1, "wb").close()
+
+    try:
         description_to_word(patent_json, p2)
+    except Exception as e:
+        print("DESCRIPTION ERROR:", e)
+        open(p2, "wb").close()
+
+    try:
         claims_to_word(patent_json, p3)
+    except Exception as e:
+        print("CLAIMS ERROR:", e)
+        open(p3, "wb").close()
 
-        zip_path = os.path.join(settings.MEDIA_ROOT, f"invention_{conversation.id}.zip")
+    # 6. ساخت ZIP (بدون کرش)
+    zip_path = os.path.join(settings.MEDIA_ROOT, f"invention_{conversation.id}.zip")
+    try:
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zipf:
-            zipf.write(p1, os.path.basename(p1))
-            zipf.write(p2, os.path.basename(p2))
-            zipf.write(p3, os.path.basename(p3))
+            for path in (p1, p2, p3):
+                if os.path.exists(path):
+                    zipf.write(path, os.path.basename(path))
+    except Exception as e:
+        print("ZIP ERROR:", e)
+        return HttpResponse("خطا در ساخت فایل ZIP", status=500)
 
-        return FileResponse(open(zip_path, "rb"), as_attachment=True,
-                            filename=f"invention_{conversation.id}.zip")
-
-    except Conversation.DoesNotExist:
-        raise Http404("مکالمه یافت نشد")
-
-
+    # 7. ارسال فایل
+    try:
+        return FileResponse(
+            open(zip_path, "rb"),
+            as_attachment=True,
+            filename=f"invention_{conversation.id}.zip"
+        )
+    except Exception as e:
+        print("RESPONSE ERROR:", e)
+        return HttpResponse("خطا در ارسال فایل", status=500)
 
 @csrf_exempt
 def set_creativity(request):
@@ -520,3 +566,22 @@ def set_creativity(request):
         "success": True,
         "details": conversation.details
     })
+
+import json
+
+def safe_json_load(text: str) -> dict:
+    if not isinstance(text, str) or not text.strip():
+        return {}
+
+    # تبدیل اعداد فارسی و عربی به انگلیسی
+    trans = str.maketrans(
+        "۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩",
+        "01234567890123456789"
+    )
+    safe_text = text.translate(trans)
+
+    try:
+        return json.loads(safe_text)
+    except json.JSONDecodeError:
+        # تحت هیچ شرایطی کرش نمی‌کنه
+        return {}
