@@ -237,65 +237,53 @@ class ChatAPIView(APIView):
             # فرض: کل خروجی مدل، فرم فعلی اختراع (مثلاً JSON) است
             conversation.last_form = reply
 
-            # Try to extract a title provided by the AI (expected to be in the JSON response)
-            new_title = None
-            parsed = None
-            try:
-                parsed = json.loads(reply)
-            except json.JSONDecodeError:
+            # Try to extract a title provided by the AI (prefer `patent_content.invention_title`)
+            def extract_title_from_reply(text):
+                # Parse safely (handles Persian/Arabic numerals via safe_json_load)
                 parsed = None
-            except Exception as e:
-                parsed = None
-                logger.warning(f"Error parsing AI reply JSON: {e}")
+                try:
+                    parsed = safe_json_load(text)
+                except Exception:
+                    parsed = None
 
-            def _safe_get(d, *path):
-                cur = d
-                for p in path:
-                    if not isinstance(cur, dict):
-                        return None
-                    cur = cur.get(p)
-                return cur
-
-            if isinstance(parsed, dict):
-                # Check common top-level keys
-                for key in ('title', 'conversation_title', 'invention_title', 'name', 'subject'):
-                    val = parsed.get(key)
-                    if val and isinstance(val, str) and val.strip():
-                        new_title = val.strip()
-                        break
-
-                # Check nested patent_content.invention_title
-                if not new_title:
-                    inv = _safe_get(parsed, 'patent_content', 'invention_title')
+                if isinstance(parsed, dict):
+                    # 1) Prefer patent_content.invention_title
+                    inv = parsed.get('patent_content', {}).get('invention_title')
                     if inv and isinstance(inv, str) and inv.strip():
-                        new_title = inv.strip()
+                        return inv.strip()[:100]
 
-                # Check abstract text
-                if not new_title:
-                    abs_text = _safe_get(parsed, 'patent_content', 'abstract', 'text') or _safe_get(parsed, 'abstract', 'text')
+                    # 2) Check common top-level keys
+                    for key in ('invention_title', 'title', 'conversation_title', 'name', 'subject'):
+                        val = parsed.get(key)
+                        if val and isinstance(val, str) and val.strip():
+                            return val.strip()[:100]
+
+                    # 3) Abstract text
+                    abs_text = (parsed.get('patent_content', {}).get('abstract') or {}).get('text') or (parsed.get('abstract') or {}).get('text')
                     if abs_text and isinstance(abs_text, str) and abs_text.strip():
-                        new_title = abs_text.strip().splitlines()[0][:100]
+                        return abs_text.strip().splitlines()[0][:100]
 
-                # Check first independent claim
-                if not new_title:
-                    claims = _safe_get(parsed, 'patent_content', 'claims', 'independent_claims') or _safe_get(parsed, 'claims', 'independent_claims')
+                    # 4) First independent claim
+                    claims = (parsed.get('patent_content', {}).get('claims') or {}).get('independent_claims') or (parsed.get('claims') or {}).get('independent_claims')
                     if isinstance(claims, list) and claims:
                         first_claim = claims[0]
                         if isinstance(first_claim, str) and first_claim.strip():
-                            new_title = first_claim.strip()[:100]
+                            return first_claim.strip()[:100]
 
-                # As a last resort, pick the first non-empty top-level string field
-                if not new_title:
+                    # 5) Any first non-empty top-level string
                     for k, v in parsed.items():
                         if isinstance(v, str) and v.strip():
-                            new_title = v.strip().splitlines()[0][:100]
-                            break
+                            return v.strip().splitlines()[0][:100]
 
-            # Fallback to using the first non-empty line of the reply (covers non-JSON replies)
-            if not new_title and isinstance(reply, str):
-                first_line = next((line.strip() for line in reply.splitlines() if line.strip()), None)
-                if first_line:
-                    new_title = first_line[:100]
+                # 6) Fallback to first non-empty line of raw text
+                if isinstance(text, str):
+                    first_line = next((line.strip() for line in text.splitlines() if line.strip()), None)
+                    if first_line:
+                        return first_line[:100]
+
+                return None
+
+            new_title = extract_title_from_reply(reply)
 
             # Apply the title if found (truncate to 100 chars)
             if new_title:
