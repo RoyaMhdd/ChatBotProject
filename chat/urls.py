@@ -9,6 +9,8 @@ from .views import (
     UpdateConversationTitleAPIView,
     download_invention_zip
 )
+from django.urls import path
+from . import views
 
 urlpatterns = [
     # Options page (type selection)
@@ -33,6 +35,10 @@ urlpatterns = [
     path('api/conversation/<int:conversation_id>/title/', UpdateConversationTitleAPIView.as_view(), name='conversation_update_title'),
 
     path('conversation/<int:conversation_id>/download-word/',  download_invention_zip, name='download_word'),
+
+path("set-creativity/", views.set_creativity, name="set_creativity"),
+
+
 ]
 
 
